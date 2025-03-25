@@ -55,8 +55,9 @@ jobs:
     - name: Deploy
       #*Only execute this step we didn't decide to skip upload
       if:  env.SKIP_UPLOAD != 'true'
-      uses: JamesIves/github-pages-deploy-action@releases/v4
-      with:
-        branch: gh-pages
-        folder: dist
-        token:  ${{ secrets.GITHUB_TOKEN }}
+      run: npm run deploy
+      # uses: JamesIves/github-pages-deploy-action@releases/v4
+      # with:
+      #   branch: gh-pages
+      #   folder: dist
+      #   token:  ${{ secrets.GITHUB_TOKEN }}
