@@ -7,7 +7,6 @@
     "start": "npm-run-all --parallel watch:webpack watch:browser",
     "dev": "webpack --mode=development --watch",
     "build": "webpack --mode=production",
-    "deploy": "gh-pages -d dist",
     "watch:webpack": "webpack --mode=development --watch",
     "watch:browser": "browser-sync start --server \"dist\" --files \"dist/**/*\""
   },
