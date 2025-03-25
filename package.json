@@ -6,6 +6,7 @@
   "scripts": {
     "start": "npm-run-all --parallel watch:webpack watch:browser",
     "dev": "webpack --mode=development --watch",
+    "build": "webpack --mode=production",
     "watch:webpack": "webpack --mode=development --watch",
     "watch:browser": "browser-sync start --server \"dist\" --files \"dist/**/*\""
   },
@@ -26,6 +27,9 @@
     "@babel/core": "^7.26.10",
     "@babel/preset-env": "^7.26.9",
     "@babel/preset-react": "^7.26.3",
+    "@semantic-release/github": "^11.0.1",
+    "@semantic-release/npm": "^12.0.1",
+    "@semantic-release/release-notes-generator": "^14.0.3",
     "babel-loader": "^10.0.0",
     "copy-webpack-plugin": "^13.0.0",
     "css-loader": "^7.1.2",
@@ -33,13 +37,18 @@
     "html-webpack-plugin": "^5.6.3",
     "npm-run-all": "^4.1.5",
     "raw-loader": "^4.0.2",
+    "semantic-release": "^24.2.3",
+    "style-loader": "^4.0.0",
     "webpack": "^5.98.0",
     "webpack-cli": "^6.0.1",
     "webpack-dev-server": "^5.2.0"
   },
   "dependencies": {
+    "@react-three/drei": "^10.0.5",
+    "@react-three/fiber": "^9.1.0",
     "browser-sync": "^3.0.3",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "three": "^0.174.0"
   }
 }
