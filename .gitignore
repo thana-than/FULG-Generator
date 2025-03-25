@@ -1,6 +1,9 @@
 # Node modules directory
 node_modules/
 
+#Affinity Lock files
+*~lock~
+
 #Generated folders
 .generated/
 
