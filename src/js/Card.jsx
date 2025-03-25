@@ -10,9 +10,9 @@ export default function Card() {
     const CARD_HEIGHT = 88 * CARD_SIZE_MULT;
 
     // Load textures (replace with your card background and character)
-    const cardTexture = useTexture('/assets/card.png');
-    const cardBackTexture = useTexture('/assets/back.png');
-    const characterTexture = useTexture('/assets/fulg_test.png');
+    const cardTexture = useTexture('assets/card.png');
+    const cardBackTexture = useTexture('assets/back.png');
+    const characterTexture = useTexture('assets/fulg_test.png');
 
     const cardGroup = React.useRef();
 
