@@ -69,9 +69,10 @@ def generate_dynamic_imports_js(parts, filename, pathKey, importPathPrefix, make
         if part['type'] not in types:
             types[part['type']] = []
 
+        _path = part[pathKey].replace("\\","/")
         types[part['type']].append({
             'hash': part['hash'],
-            'path': f'{importPathPrefix}{part[pathKey].replace("\\","/")}'
+            'path': f'{importPathPrefix}{_path}'
         })
 
     content = ''
