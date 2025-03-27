@@ -1,0 +1,12 @@
+{
+    "type": "torso",
+    "vibes": {
+        "swampy": 0.7,
+        "goofy": 0.1
+    },
+    "joints": {
+        "type": "head",
+        "x": 1,
+        "y": 2
+    }
+}
