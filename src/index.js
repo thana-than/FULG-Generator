@@ -5,6 +5,7 @@ import { OrbitControls, Environment, useTexture } from '@react-three/drei';
 import { gsap } from 'gsap';
 import * as THREE from 'three';
 import Card from './js/Card.jsx';
+import ImageExport from './js/ImageExport.jsx';
 
 const App = () => {
     const appCanvas = React.useRef();
@@ -55,10 +56,12 @@ const App = () => {
             <Canvas
                 ref={appCanvas}
                 camera={{ position: [0, 0, 10], fov: 25 }} // Adjust camera position
+                gl={{ preserveDrawingBuffer: true }}
             >
                 <Environment preset="apartment" environmentIntensity={1} blur={.5} />
                 <ambientLight intensity={1} />
                 <Card />
+                <ImageExport />
                 <OrbitControls
                     onStart={() => {
                         if (currentZoom.current = -1)

@@ -5,15 +5,20 @@ import { gsap } from 'gsap';
 import * as THREE from 'three';
 import '../css/card.css'
 
-export default function Card() {
-    const CARD_SIZE_MULT = .03;
-    const CARD_WIDTH = 63 * CARD_SIZE_MULT;
-    const CARD_HEIGHT = 88 * CARD_SIZE_MULT;
+export const CARD_RES_X = 630;
+export const CARD_RES_Y = 880;
 
-    // Load textures (replace with your card background and character)
-    const cardTexture = useTexture('assets/card.png');
-    const cardBackTexture = useTexture('assets/back.png');
-    const characterTexture = useTexture('assets/fulg_test.png');
+export const CARD_SIZE_MULT = .003;
+export const CARD_SCALE_WIDTH = CARD_RES_X * CARD_SIZE_MULT;
+export const CARD_SCALE_HEIGHT = CARD_RES_Y * CARD_SIZE_MULT;
+
+export default function Card() {
+    // Load textures
+    const [cardFrameTexture, cardOutlineTexture, cardBackTexture] = useTexture([
+        'assets/card_frame.png',
+        'assets/card_outline.png',
+        'assets/back.png'
+    ]);
 
     const cardGroup = React.useRef();
 
@@ -46,14 +51,19 @@ export default function Card() {
     return (
         <group ref={cardGroup}>
             {/* Front side */}
-            <mesh position={[0, 0, 0.0001]}>
-                <planeGeometry args={[CARD_WIDTH, CARD_HEIGHT]} />
-                <meshStandardMaterial map={cardTexture} side={THREE.FrontSide} />
+
+            <mesh renderOrder={0}>
+                <planeGeometry args={[CARD_SCALE_WIDTH, CARD_SCALE_HEIGHT]} />
+                <meshStandardMaterial map={cardFrameTexture} color={"#FFFF00"} transparent={true} side={THREE.FrontSide} />
+            </mesh>
+            <mesh renderOrder={1}>
+                <planeGeometry args={[CARD_SCALE_WIDTH, CARD_SCALE_HEIGHT]} />
+                <meshStandardMaterial map={cardOutlineTexture} color={'black'} transparent={true} side={THREE.FrontSide} />
             </mesh>
             {/* Back side (flipped) */}
-            <mesh position={[0, 0, -0.0001]} rotation={[0, Math.PI, 0]}>
-                <planeGeometry args={[CARD_WIDTH, CARD_HEIGHT]} />
-                <meshStandardMaterial map={cardBackTexture} side={THREE.FrontSide} />
+            <mesh renderOrder={100} rotation={[0, Math.PI, 0]}>
+                <planeGeometry args={[CARD_SCALE_WIDTH, CARD_SCALE_HEIGHT]} />
+                <meshStandardMaterial map={cardBackTexture} transparent={true} side={THREE.FrontSide} />
             </mesh>
         </group>
     );
