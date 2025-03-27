@@ -6,7 +6,6 @@ import { gsap } from 'gsap';
 import * as THREE from 'three';
 import Card from './js/Card.jsx';
 import ImageExport from './js/ImageExport.jsx';
-import Generate from './js/generator.js';
 
 //* Actually solves for our imports
 import './js/metadata.js'
@@ -46,14 +45,6 @@ const App = () => {
             }
         })
     };
-
-    React.useEffect(() => {
-        GenerateCharacter();
-    });
-
-    const GenerateCharacter = () => {
-        return Generate();
-    }
 
     return (
         <div style={{

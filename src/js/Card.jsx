@@ -4,6 +4,8 @@ import { useTexture } from '@react-three/drei';
 import { gsap } from 'gsap';
 import * as THREE from 'three';
 import '../css/card.css'
+import GenerateCard from './generator.js';
+import GenerateCharacter from './CharacterImageGenerator.jsx'
 
 export const CARD_RES_X = 630;
 export const CARD_RES_Y = 880;
@@ -21,6 +23,7 @@ export default function Card() {
     ]);
 
     const cardGroup = React.useRef();
+
 
     React.useEffect(() => {
         if (cardGroup.current) {
@@ -65,6 +68,7 @@ export default function Card() {
                 <planeGeometry args={[CARD_SCALE_WIDTH, CARD_SCALE_HEIGHT]} />
                 <meshStandardMaterial map={cardBackTexture} transparent={true} side={THREE.FrontSide} />
             </mesh>
+            <GenerateCharacter />
         </group>
     );
 }

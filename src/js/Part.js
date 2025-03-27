@@ -11,6 +11,9 @@ export default class Part {
         this.joints = json['joints'];
     }
 
+    /**
+    * @returns {Promise<HTMLImageElement | null>}
+    */
     async getPNG() {
         if (this.#png) return this.#png;
 
@@ -19,6 +22,7 @@ export default class Part {
             const module = await importFn();
             this.#pngUrl = module.default;
             this.#png = await this.#loadImage(this.#pngUrl);
+
             return this.#png;
         } catch (error) {
             console.error(`Failed to load PNG for ${this.key}:`, error);
@@ -26,7 +30,10 @@ export default class Part {
         }
     }
 
-    async #loadImage(url) {
+    /**
+    * @returns {Promise<HTMLImageElement>}
+    */
+    #loadImage(url) {
         return new Promise((resolve) => {
             const img = new Image();
             img.onload = () => resolve(img);
