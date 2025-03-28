@@ -36,7 +36,7 @@ export default function Card() {
     ]);
 
     const fontLoader = new FontLoader();
-    const font_griffy = fontLoader.parse(require('../fonts/Griffy_Regular.json'));
+    //const font_griffy = fontLoader.parse(require('../fonts/Griffy_Regular.json'));
     const font_berlinSans = fontLoader.parse(require('../fonts/Berlin Sans.json'));
     const font_batty = fontLoader.parse(require('../fonts/Batty.json'));
 
@@ -125,7 +125,7 @@ export default function Card() {
 
     return (
         <>
-            <group ref={cardGroup}>
+            <group ref={cardGroup} scale={[0, 0, 0]}>
 
                 {/* Mask plane - this will define the visible area */}
                 <mesh renderOrder={-10000}>
