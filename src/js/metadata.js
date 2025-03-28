@@ -2,8 +2,8 @@ import * as JSON from '../.generated/partJSON.js';
 import Part from './Part.js';
 
 export const parts = {
-    heads: BuildPartList(JSON.head),
-    torsos: BuildPartList(JSON.torso),
+    head: BuildPartList(JSON.head),
+    torso: BuildPartList(JSON.torso),
 };
 
 function BuildPartList(typeImportObject) {

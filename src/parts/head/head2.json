@@ -1,0 +1,13 @@
+{
+    "type": "head",
+    "vibes": {
+        "swampy": 0.7,
+        "goofy": 0.1
+    },
+    "joints": {
+        "root": {
+            "x": 135,
+            "y": 352
+        }
+    }
+}

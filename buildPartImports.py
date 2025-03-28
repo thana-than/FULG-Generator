@@ -79,17 +79,6 @@ def generate_dynamic_imports_js(parts, filename, pathKey, importPathPrefix, make
     for key in types:
         content += buildContentFunctionBlock(f'parts_{pathKey}', key, types[key], makeDynamicModule)
 
-    # #* Start the content of the dynamicImports.js file
-    # content = f'export const {pathKey} = ' + "{\n"
-    
-    # #* Add each file to the gameFiles object
-    # #* Each line adds a dynamic import for webpack to handle. We use webpackChunkName to ensure the files all share the same pack.
-    # for part in parts:
-    #      content += f"    '{part['hash']}': () => import(/* webpackChunkName: \"parts\" */ '{importPathPrefix}{part[pathKey].replace("\\","/")}'),\n"
-
-    # #* Close the object
-    # content += "};\n"
-
     #* Write the content to the output file
     with open(filename, 'w') as f:
         f.write(content)
