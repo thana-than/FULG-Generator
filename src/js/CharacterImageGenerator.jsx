@@ -10,26 +10,6 @@ function GetPart(type) {
     return parts[type][Math.floor(Math.random() * parts[type].length)];
 };
 
-const buildPartMesh = (img) => {
-    const texture = new THREE.TextureLoader().load(img.src);
-
-    const geometry = new THREE.PlaneGeometry(
-        img.width * CHAR_SIZE_MULT,
-        img.height * CHAR_SIZE_MULT
-    );
-    const material = new THREE.MeshBasicMaterial({
-        map: texture,
-        color: 0xffffff,
-        transparent: true,
-        side: THREE.FrontSide,
-        depthWrite: false,
-        depthTest: false
-    });
-    const mesh = new THREE.Mesh(geometry, material);
-
-    return mesh;
-};
-
 const PartMesh = ({ partData, renderOrder }) => {
     const [mesh, setMesh] = React.useState(null);
     const part = partData['part'];
@@ -38,11 +18,32 @@ const PartMesh = ({ partData, renderOrder }) => {
 
     React.useEffect(() => {
         let mounted = true;
+        const textureLoader = new THREE.TextureLoader();
 
         const getMesh = () => {
-            const plane = buildPartMesh(img);
-            plane.renderOrder = renderOrder;
-            if (mounted) setMesh(plane);
+            textureLoader.load(
+                img.src,
+                (texture) => {
+                    if (!mounted) return;
+
+                    const geometry = new THREE.PlaneGeometry(
+                        img.width * CHAR_SIZE_MULT,
+                        img.height * CHAR_SIZE_MULT
+                    );
+                    const material = new THREE.MeshBasicMaterial({
+                        map: texture,
+                        color: 0xffffff,
+                        transparent: true,
+                        side: THREE.FrontSide,
+                        depthWrite: false,
+                        depthTest: false
+                    });
+                    const plane = new THREE.Mesh(geometry, material);
+                    plane.renderOrder = renderOrder;
+
+                    setMesh(plane);
+                }
+            );
         };
 
         getMesh();
@@ -51,6 +52,7 @@ const PartMesh = ({ partData, renderOrder }) => {
             mounted = false;
             if (mesh) {
                 mesh.geometry.dispose();
+                if (mesh.material.map) mesh.material.map.dispose();
                 mesh.material.dispose();
             }
         };
@@ -95,10 +97,9 @@ async function loadPartData(part, offset) {
     return partData;
 }
 
-var connectionQueue = [];
-
 async function createConnectionParts(partData) {
     const parentPart = partData['part'];
+    const newParts = [];
 
     for (var joint in parentPart.joints) {
         const p = GetPart(joint);
@@ -114,27 +115,30 @@ async function createConnectionParts(partData) {
             partData['position'][2] - jointOffset[2],
         ];
         const newData = await loadPartData(p, offset);
-        connectionQueue.push(newData);
+        newParts.push(newData);
     }
 
-    return partData;
+    return newParts;
 }
 
 function CharacterContent() {
     const [characterParts, setCharacterParts] = React.useState([]);
 
     React.useEffect(() => {
-        async function processQueue() {
+        async function buildCharacter() {
             const sourcePart = await loadPartData(GetPart('torso'), [0, 0, 0]);
-            connectionQueue = [sourcePart];
-
-            for (let i = 0; i < connectionQueue.length; i++) {
-                createConnectionParts(connectionQueue[i]);
+            let allParts = [sourcePart];
+            let queue = [sourcePart];
+            while (queue.length > 0) {
+                const currentPart = queue.shift();
+                const connectedParts = await createConnectionParts(currentPart);
+                allParts = [...allParts, ...connectedParts];
+                queue = [...queue, ...connectedParts];
             }
 
-            setCharacterParts(connectionQueue);
+            setCharacterParts(allParts);
         }
-        processQueue();
+        buildCharacter();
     }, []);
 
     return (
