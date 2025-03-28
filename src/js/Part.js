@@ -1,8 +1,10 @@
 import * as PNG from '../.generated/partPNG.js';
+import * as THREE from 'three';
 
 export default class Part {
     #png = null;
     #pngUrl = null; //* Track the URL separately for cleanup
+    #texture = null;
 
     constructor(key, json) {
         this.key = key;
@@ -12,10 +14,10 @@ export default class Part {
     }
 
     /**
-    * @returns {Promise<HTMLImageElement | null>}
+    * @returns {Promise<THREE.Texture | null>}
     */
-    async getPNG() {
-        if (this.#png) return this.#png;
+    async getTexture() {
+        if (this.#texture) return this.#texture;
 
         try {
             const importFn = PNG[this.type][this.key];
@@ -23,9 +25,12 @@ export default class Part {
             this.#pngUrl = module.default;
             this.#png = await this.#loadImage(this.#pngUrl);
 
-            return this.#png;
+            this.#texture = new THREE.Texture(this.#png);
+            this.#texture.needsUpdate = true
+
+            return this.#texture;
         } catch (error) {
-            console.error(`Failed to load PNG for ${this.key}:`, error);
+            console.error(`Failed to load texture for ${this.key}:`, error);
             return null;
         }
     }
@@ -41,14 +46,20 @@ export default class Part {
         });
     }
 
-    disposePNG() {
+    dispose() {
         if (this.#png) {
             this.#png.src = '';
             if (this.#png.parentNode) {
                 this.#png.parentNode.removeChild(this.#png);
             }
         }
+
+        if (this.#texture) {
+            this.#texture.dispose();
+        }
+
         this.#png = null;
         this.#pngUrl = null;
+        this.#texture = null;
     }
 }

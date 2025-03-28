@@ -37,6 +37,7 @@ export default function ImageExport() {
             {
                 minFilter: THREE.LinearFilter,
                 magFilter: THREE.LinearFilter,
+                stencilBuffer: true,
                 format: THREE.RGBAFormat,
                 antialias: true
             }

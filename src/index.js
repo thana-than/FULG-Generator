@@ -2,7 +2,6 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Environment, useTexture } from '@react-three/drei';
-import { gsap } from 'gsap';
 import * as THREE from 'three';
 import Card from './js/Card.jsx';
 import ImageExport from './js/ImageExport.jsx';
@@ -17,7 +16,7 @@ const App = () => {
     const currentZoom = React.useRef(-1);
     const isDragging = React.useRef(false);
 
-    const POLAR_RAD_MAX = .1
+    const POLAR_RAD_MAX = 1
     const MAX_ROTATE_SPEED = 2
 
     const ControlsUpdater = () => {
@@ -59,7 +58,7 @@ const App = () => {
             <Canvas
                 ref={appCanvas}
                 camera={{ position: [0, 0, 10], fov: 25 }} // Adjust camera position
-                gl={{ preserveDrawingBuffer: true }}
+                gl={{ preserveDrawingBuffer: true, stencil: true, depth: true, powerPreference: 'high-performance', antialias: true }}
             >
                 <Environment preset="apartment" environmentIntensity={1} blur={.5} />
                 <ambientLight intensity={1} />
@@ -95,6 +94,7 @@ const App = () => {
                     }}
                 />
                 <ControlsUpdater />
+
             </Canvas>
         </div>
     );

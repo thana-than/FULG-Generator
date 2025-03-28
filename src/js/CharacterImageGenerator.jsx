@@ -3,6 +3,8 @@ import { parts } from './metadata.js'
 import * as THREE from 'three';
 
 const CHAR_SIZE_MULT = .003;
+const CHAR_POSITION_OFFSET = [0, 0, -.1]
+const CHAR_BASE_RENDER_OFFSET = -100
 
 function GetPart(type) {
     if (!(type in parts))
@@ -14,36 +16,35 @@ const PartMesh = ({ partData, renderOrder }) => {
     const [mesh, setMesh] = React.useState(null);
     const part = partData['part'];
     const position = partData['position'];
-    const img = partData['img'];
+    const texture = partData['texture'];
 
     React.useEffect(() => {
         let mounted = true;
-        const textureLoader = new THREE.TextureLoader();
 
         const getMesh = () => {
-            textureLoader.load(
-                img.src,
-                (texture) => {
-                    if (!mounted) return;
+            if (!mounted) return;
 
-                    const geometry = new THREE.PlaneGeometry(
-                        img.width * CHAR_SIZE_MULT,
-                        img.height * CHAR_SIZE_MULT
-                    );
-                    const material = new THREE.MeshBasicMaterial({
-                        map: texture,
-                        color: 0xffffff,
-                        transparent: true,
-                        side: THREE.FrontSide,
-                        depthWrite: false,
-                        depthTest: false
-                    });
-                    const plane = new THREE.Mesh(geometry, material);
-                    plane.renderOrder = renderOrder;
-
-                    setMesh(plane);
-                }
+            const geometry = new THREE.PlaneGeometry(
+                texture.image.width * CHAR_SIZE_MULT,
+                texture.image.height * CHAR_SIZE_MULT
             );
+            const material = new THREE.MeshBasicMaterial({
+                map: texture,
+                color: 0xffffff,
+                transparent: true,
+                side: THREE.FrontSide,
+                depthWrite: false,
+                depthTest: false,
+                stencilWrite: true,
+                stencilRef: 1,
+                stencilFunc: THREE.EqualStencilFunc,
+                stencilFail: THREE.KeepStencilOp,
+                stencilZPass: THREE.KeepStencilOp
+            });
+            const plane = new THREE.Mesh(geometry, material);
+            plane.renderOrder = renderOrder;
+
+            setMesh(plane);
         };
 
         getMesh();
@@ -62,12 +63,12 @@ const PartMesh = ({ partData, renderOrder }) => {
     return <primitive object={mesh} position={position} />;
 };
 
-function GetPosition(pixel, img) {
+function GetPosition(pixel, texture) {
     let jointX = pixel[0];
-    let jointY = img.height - pixel[1];
+    let jointY = texture.image.height - pixel[1];
 
-    let x = (img.width / 2) - jointX;
-    let y = (img.height / 2) - jointY;
+    let x = (texture.image.width / 2) - jointX;
+    let y = (texture.image.height / 2) - jointY;
 
     return [x * CHAR_SIZE_MULT, y * CHAR_SIZE_MULT, 0];
 }
@@ -76,14 +77,14 @@ async function loadPartData(part, offset) {
     if (offset == undefined)
         offset = [0, 0, 0];
 
-    const img = await part.getPNG();
-    let pixel = [img.width / 2, img.height / 2]
+    const texture = await part.getTexture();
+    let pixel = [texture.image.width / 2, texture.image.height / 2]
     if ('root' in part.joints) {
         pixel[0] = part.joints['root']['x']
         pixel[1] = part.joints['root']['y']
     }
 
-    const position = GetPosition(pixel, img);
+    const position = GetPosition(pixel, texture);
     position[0] += offset[0];
     position[1] += offset[1];
     position[2] += offset[2];
@@ -91,7 +92,7 @@ async function loadPartData(part, offset) {
     const partData = {
         'part': part,
         'position': position,
-        'img': img
+        'texture': texture
     }
 
     return partData;
@@ -108,7 +109,7 @@ async function createConnectionParts(partData) {
             continue;
 
         const jointPixel = parentPart['joints'][joint];
-        const jointOffset = GetPosition([jointPixel['x'], jointPixel['y']], partData['img']);
+        const jointOffset = GetPosition([jointPixel['x'], jointPixel['y']], partData['texture']);
         const offset = [
             partData['position'][0] - jointOffset[0],
             partData['position'][1] - jointOffset[1],
@@ -126,7 +127,7 @@ function CharacterContent() {
 
     React.useEffect(() => {
         async function buildCharacter() {
-            const sourcePart = await loadPartData(GetPart('torso'), [0, 0, 0]);
+            const sourcePart = await loadPartData(GetPart('torso'), CHAR_POSITION_OFFSET);
             let allParts = [sourcePart];
             let queue = [sourcePart];
             while (queue.length > 0) {
@@ -144,7 +145,7 @@ function CharacterContent() {
     return (
         <group>
             {characterParts.map((partData, index) => (
-                <PartMesh key={`part-${index}`} partData={partData} renderOrder={10 + index} />
+                <PartMesh key={`part-${index}`} partData={partData} renderOrder={CHAR_BASE_RENDER_OFFSET + index} />
             ))}
         </group>
     );
