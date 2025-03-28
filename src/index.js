@@ -58,7 +58,7 @@ const App = () => {
             <Canvas
                 ref={appCanvas}
                 camera={{ position: [0, 0, 10], fov: 25 }} // Adjust camera position
-                gl={{ preserveDrawingBuffer: true, stencil: true, depth: true, powerPreference: 'high-performance', antialias: true }}
+                gl={{ preserveDrawingBuffer: true, stencil: true, depth: true, powerPreference: 'high-performance', anisotrtophy: 2, samples: 4, antialias: true }}
             >
                 <Environment preset="apartment" environmentIntensity={1} blur={.5} />
                 <ambientLight intensity={1} />

@@ -3,7 +3,7 @@ import { parts } from './metadata.js'
 import * as THREE from 'three';
 
 const CHAR_SIZE_MULT = .003;
-const CHAR_POSITION_OFFSET = [0, 0, -.1]
+const CHAR_POSITION_OFFSET = [0, -.1, -.1]
 const CHAR_BASE_RENDER_OFFSET = -100
 
 function GetPart(type) {

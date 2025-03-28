@@ -16,7 +16,6 @@ const BGSphere = ({ texture }) => {
         const newTexture = texture.clone(); //* Clone the texture to avoid global changes
         newTexture.wrapS = newTexture.wrapT = THREE.RepeatWrapping;
         const aspectRatio = texture.image.height / texture.image.width;
-        console.log(aspectRatio);
         const repeatX = -2.5;
         const repeatY = 1.25 / aspectRatio;
         newTexture.repeat.set(repeatX, repeatY);

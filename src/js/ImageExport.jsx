@@ -39,7 +39,9 @@ export default function ImageExport() {
                 magFilter: THREE.LinearFilter,
                 stencilBuffer: true,
                 format: THREE.RGBAFormat,
-                antialias: true
+                antialias: true,
+                anisotropy: 16,
+                samples: 16,
             }
         );
 
