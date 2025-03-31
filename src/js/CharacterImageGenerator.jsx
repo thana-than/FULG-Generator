@@ -9,7 +9,12 @@ const CHAR_BASE_RENDER_OFFSET = -100
 function GetPart(type) {
     if (!(type in parts))
         return null;
-    return parts[type][Math.floor(Math.random() * parts[type].length)];
+
+    //TODO allow pull from a custom part type dictionary that allows us to continuously preview a specific part type
+    //TODO ensure the above TODO is only available in dev (GOD_MODE?)
+
+    let randomIndex = Math.floor(Math.random() * parts[type].length);
+    return parts[type][randomIndex];
 };
 
 const PartMesh = ({ partData, renderOrder }) => {
@@ -89,10 +94,12 @@ async function loadPartData(part, offset) {
     position[1] += offset[1];
     position[2] += offset[2];
 
+
     const partData = {
         'part': part,
         'position': position,
-        'texture': texture
+        'texture': texture,
+        'renderOrder': CHAR_BASE_RENDER_OFFSET //TODO customize per type
     }
 
     return partData;
@@ -130,11 +137,15 @@ function CharacterContent() {
             const sourcePart = await loadPartData(GetPart('torso'), CHAR_POSITION_OFFSET);
             let allParts = [sourcePart];
             let queue = [sourcePart];
-            while (queue.length > 0) {
+            let max = 50;
+            let increment = 0;
+            //TODO some sort of validation in case something goes awry (ie. torso mapped instead of root for a part)
+            while (queue.length > 0 && increment < max) {
                 const currentPart = queue.shift();
                 const connectedParts = await createConnectionParts(currentPart);
                 allParts = [...allParts, ...connectedParts];
                 queue = [...queue, ...connectedParts];
+                increment++;
             }
 
             setCharacterParts(allParts);
@@ -145,7 +156,7 @@ function CharacterContent() {
     return (
         <group>
             {characterParts.map((partData, index) => (
-                <PartMesh key={`part-${index}`} partData={partData} renderOrder={CHAR_BASE_RENDER_OFFSET + index} />
+                <PartMesh key={`part-${index}`} partData={partData} renderOrder={partData['renderOrder'] + index} />
             ))}
         </group>
     );
