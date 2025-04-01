@@ -4,10 +4,11 @@
   "description": "Fucked Up Little Guy Generator",
   "main": "index.js",
   "scripts": {
-    "start": "python buildPartImports.py && npm-run-all --parallel watch:webpack watch:browser",
+    "start": "npm run python_prebuild && npm-run-all --parallel watch:webpack watch:browser",
     "test": "cross-env TESTMODE=true npm start",
-    "dev": "python buildPartImports.py --dev && webpack --mode=development --watch",
-    "build": "python buildPartImports.py && webpack --mode=production",
+    "dev": "npm run python_prebuild --dev && webpack --mode=development --watch",
+    "build": "npm run python_prebuild && webpack --mode=production",
+    "python_prebuild": "pip install -r python/requirements.txt && python python/buildWordGenerator.py && python python/buildPartImports.py",
     "watch:webpack": "webpack --mode=development --watch",
     "watch:browser": "browser-sync start --server \"dist\" --files \"dist/**/*\""
   },
