@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "python buildPartImports.py --dev && npm-run-all --parallel watch:webpack watch:browser",
+    "test": "cross-env TESTMODE=true npm start",
     "dev": "python buildPartImports.py --dev && webpack --mode=development --watch",
     "build": "python buildPartImports.py && webpack --mode=production",
     "watch:webpack": "webpack --mode=development --watch",

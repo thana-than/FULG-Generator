@@ -1,3 +1,4 @@
+import Global from './Global.js'
 import React from 'react';
 import { parts } from './metadata.js'
 import * as THREE from 'three';
@@ -6,15 +7,56 @@ const CHAR_SIZE_MULT = .003;
 const CHAR_POSITION_OFFSET = [0, -.1, -.1]
 const CHAR_BASE_RENDER_OFFSET = -100
 
+const TYPE_RENDER_ORDER = {
+    'head': 15,
+    'l_arm': 10,
+    'r_arm': 10,
+    'legs': 5,
+    'torso': 0,
+}
+
+var arm_index = -1
+var testjson = {}
+if (Global.TEST_MODE) {
+    try {
+        testjson = await import('/testparts.json');
+    } catch (e) {
+        console.log("testparts.json does not exist.")
+    }
+}
+
+function resetGenerator() {
+    arm_index = -1
+}
+
+
+function isArmType(type) {
+    return type == 'l_arm' || type == 'r_arm';
+}
+
 function GetPart(type) {
     if (!(type in parts))
         return null;
 
-    //TODO allow pull from a custom part type dictionary that allows us to continuously preview a specific part type
-    //TODO ensure the above TODO is only available in dev (GOD_MODE?)
+    let index = -1
 
-    let randomIndex = Math.floor(Math.random() * parts[type].length);
-    return parts[type][randomIndex];
+    if (Global.TEST_MODE && type in testjson) {
+
+        console.log("Searching test requirement for " + type + ": " + testjson[type])
+        index = parts[type].findIndex((element) => element.key.includes(testjson[type]))
+    }
+    else if (isArmType(type) && arm_index >= 0) {
+        index = arm_index;
+        console.log("Selected cached arm index for " + type + ": " + index)
+    }
+
+    if (index < 0)
+        index = Math.floor(Math.random() * parts[type].length);
+
+    if (isArmType(type))
+        arm_index = index;
+
+    return parts[type][index];
 };
 
 const PartMesh = ({ partData, renderOrder }) => {
@@ -94,12 +136,16 @@ async function loadPartData(part, offset) {
     position[1] += offset[1];
     position[2] += offset[2];
 
+    let renderOrder = CHAR_BASE_RENDER_OFFSET
+    if (part['type'] in TYPE_RENDER_ORDER) {
+        renderOrder += TYPE_RENDER_ORDER[part['type']]
+    }
 
     const partData = {
         'part': part,
         'position': position,
         'texture': texture,
-        'renderOrder': CHAR_BASE_RENDER_OFFSET //TODO customize per type
+        'renderOrder': renderOrder
     }
 
     return partData;
@@ -133,6 +179,8 @@ function CharacterContent() {
     const [characterParts, setCharacterParts] = React.useState([]);
 
     React.useEffect(() => {
+        resetGenerator()
+
         async function buildCharacter() {
             const sourcePart = await loadPartData(GetPart('torso'), CHAR_POSITION_OFFSET);
             let allParts = [sourcePart];
@@ -156,7 +204,7 @@ function CharacterContent() {
     return (
         <group>
             {characterParts.map((partData, index) => (
-                <PartMesh key={`part-${index}`} partData={partData} renderOrder={partData['renderOrder'] + index} />
+                <PartMesh key={`part-${index}`} partData={partData} renderOrder={partData['renderOrder']} />
             ))}
         </group>
     );

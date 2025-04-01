@@ -80,7 +80,7 @@ module.exports = {
     },
     plugins: [
         new webpack.DefinePlugin({
-            'process.env.GODMODE': JSON.stringify(process.env.GODMODE)
+            'process.env.TESTMODE': JSON.stringify(process.env.TESTMODE)
         }),
         new HtmlWebpackPlugin({
             template: './src/index.html',

@@ -1,6 +1,9 @@
 # FULG_Metadater software
 FULG_Metadater.exe
 
+# testparts
+testparts.json
+
 # Node modules directory
 node_modules/
 
