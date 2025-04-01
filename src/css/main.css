@@ -46,7 +46,7 @@ button {
     letter-spacing: .5pt;
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
     .download-button:hover {
         letter-spacing: .1em;
     }
