@@ -41,13 +41,12 @@ function GetPart(type) {
     let index = -1
 
     if (Global.TEST_MODE && type in testjson) {
-
         console.log("Searching test requirement for " + type + ": " + testjson[type])
         index = parts[type].findIndex((element) => element.key.includes(testjson[type]))
     }
     else if (isArmType(type) && arm_index >= 0) {
         index = arm_index;
-        console.log("Selected cached arm index for " + type + ": " + index)
+        //console.log("Selected cached arm index for " + type + ": " + index)
     }
 
     if (index < 0)
@@ -175,7 +174,7 @@ async function createConnectionParts(partData) {
     return newParts;
 }
 
-function CharacterContent() {
+function CharacterContent({ onLoad }) {
     const [characterParts, setCharacterParts] = React.useState([]);
 
     React.useEffect(() => {
@@ -197,6 +196,7 @@ function CharacterContent() {
             }
 
             setCharacterParts(allParts);
+            onLoad();
         }
         buildCharacter();
     }, []);
@@ -210,6 +210,6 @@ function CharacterContent() {
     );
 };
 
-export default function GenerateCharacter() {
-    return <CharacterContent />;
+export default function GenerateCharacter({ onLoad }) {
+    return <CharacterContent onLoad={onLoad} />;
 }

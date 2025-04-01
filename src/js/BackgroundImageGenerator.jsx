@@ -46,7 +46,7 @@ const BGSphere = ({ texture }) => {
     );
 }
 
-function BackgroundContent() {
+function BackgroundContent({ onLoad }) {
     const [texture, setTexture] = React.useState(null);
 
     React.useEffect(() => {
@@ -54,6 +54,7 @@ function BackgroundContent() {
             const bg = GetBackground();
             const tex = await bg.getTexture();
             setTexture(tex);
+            onLoad();
         }
         loadBG();
     }, []);
@@ -61,8 +62,8 @@ function BackgroundContent() {
     return <BGSphere texture={texture} />
 }
 
-export default function GenerateBackground() {
+export default function GenerateBackground({ onLoad }) {
     return (
-        <BackgroundContent />
+        <BackgroundContent onLoad={onLoad} />
     );
 }

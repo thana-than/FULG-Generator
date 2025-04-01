@@ -23,7 +23,7 @@ export const CARD_SCALE_WIDTH = CARD_RES_X * CARD_SIZE_MULT;
 export const CARD_SCALE_HEIGHT = CARD_RES_Y * CARD_SIZE_MULT;
 const CARD_FRAME_Z = .02;
 
-export default function Card() {
+export default function Card({ onReady, onAnimationComplete }) {
     // Load textures
     const [cardFrameTexture, cardOutlineTexture, cardBackLogoTexture, cardBackOutlineTexture, cardBackBGTexture, cardMaskTexture, cardGradientTexture] = useTexture([
         'assets/card_frame.png',
@@ -37,14 +37,21 @@ export default function Card() {
 
     const fontLoader = new FontLoader();
     //const font_griffy = fontLoader.parse(require('../fonts/Griffy_Regular.json'));
-    const font_berlinSans = fontLoader.parse(require('../fonts/Berlin Sans.json'));
-    const font_batty = fontLoader.parse(require('../fonts/Batty.json'));
+    // const font_berlinSans = fontLoader.parse(require('../fonts/Berlin Sans.json'));
+    const font_title = fontLoader.parse(require('../fonts/Belanosima SemiBold.json'));
+    const font_slogan = fontLoader.parse(require('../fonts/Batty.json'));
 
     const cardGroup = React.useRef();
     const cardFace = React.useRef();
     const cardBack = React.useRef();
-    const color = getRandomColor();
-    const textColor = 0xffffff;
+    const [color, setColor] = React.useState(getRandomColor());
+    const [textColor, setTextColor] = React.useState(0xffffff);
+    const [isCharacterLoaded, setCharacterLoaded] = React.useState(false);
+    const [isBackgroundLoaded, setBackgroundLoaded] = React.useState(false);
+    const [isReady, setIsReady] = React.useState(false);
+    const [isAnimationComplete, setIsAnimationComplete] = React.useState(false);
+    const [characterName, setCharacterName] = React.useState("This is the Name of the Guy")
+    const [characterSlogan, setCharacterSlogan] = React.useState("\"And this is a quote!\nWow!\nYippee!\"")
 
     function getRandomColor() {
         const rgb = hsvToRgb(Math.random(), 1, .4);
@@ -53,30 +60,41 @@ export default function Card() {
     }
 
     React.useEffect(() => {
-        if (cardGroup.current) {
-            // Set initial scale
-            cardGroup.current.scale.set(0.01, 0.01, 0.01);
-
-            cardGroup.current.rotation.set(0, -Math.PI * 2, 0);
-
-            gsap.to(cardGroup.current.rotation, {
-                x: 0,
-                y: 0,
-                z: 0,
-                duration: 0.5,
-                ease: "linear"
-            })
-
-            // Animate to full scale
-            gsap.to(cardGroup.current.scale, {
-                x: 1,
-                y: 1,
-                z: 1,
-                duration: 1,
-                ease: "back.out(1.7)"
-            });
+        if (isCharacterLoaded && isBackgroundLoaded) {
+            setIsReady(true);
         }
-    }, []);
+    }, [isCharacterLoaded, isBackgroundLoaded]);
+
+    React.useEffect(() => {
+        if (!isReady || !cardGroup.current) return;
+        // Set initial scale
+        cardGroup.current.scale.set(0.01, 0.01, 0.01);
+
+        cardGroup.current.rotation.set(0, -Math.PI * 2, 0);
+
+        onReady();
+
+        gsap.to(cardGroup.current.rotation, {
+            x: 0,
+            y: 0,
+            z: 0,
+            duration: 0.5,
+            ease: "linear"
+        })
+
+        gsap.to(cardGroup.current.scale, {
+            x: 1,
+            y: 1,
+            z: 1,
+            duration: 1,
+            ease: "back.out(1.7)",
+            onComplete() {
+                setIsAnimationComplete(true);
+                onAnimationComplete();
+            }
+        });
+
+    }, [isReady]);
 
     function FrameBox({ position, size }) {
         return (
@@ -146,7 +164,7 @@ export default function Card() {
 
                 {/* Front side */}
                 <group ref={cardFace}>
-                    <GenerateBackground />
+                    <GenerateBackground onLoad={() => setBackgroundLoaded(true)} />
                     {/* <FrameBox position={[0, CARD_SCALE_HEIGHT / 2, 0]} size={[1000, .5, CARD_FRAME_Z * 2]} />
                     <FrameBox position={[0, -CARD_SCALE_HEIGHT / 2, 0]} size={[1000, 1, CARD_FRAME_Z * 2]} />
                     <FrameBox position={[CARD_SCALE_WIDTH / 2, 0, 0]} size={[.1, 1000, CARD_FRAME_Z * 2]} />
@@ -156,9 +174,9 @@ export default function Card() {
                         <planeGeometry args={[CARD_SCALE_WIDTH, CARD_SCALE_HEIGHT]} />
                         <meshStandardMaterial map={cardOutlineTexture} color={color} transparent={true} opacity={.66} side={THREE.FrontSide} />
                     </mesh>
-                    <Text text={"This is the Name of the Guy"} font={font_berlinSans} position={[-CARD_SCALE_WIDTH / 2 + .085, CARD_SCALE_HEIGHT / 2 - .185, .01]} size={33} />
-                    <Text text={"\"And this is a quote!\nWow!\nYippee!\""} font={font_batty} position={[-CARD_SCALE_WIDTH / 2 + .1, -CARD_SCALE_HEIGHT / 2 + .33, .01]} size={33} />
-                    <GenerateCharacter />
+                    <Text text={characterName} font={font_title} position={[-CARD_SCALE_WIDTH / 2 + .085, CARD_SCALE_HEIGHT / 2 - .2, .01]} size={33} />
+                    <Text text={characterSlogan} font={font_slogan} position={[-CARD_SCALE_WIDTH / 2 + .1, -CARD_SCALE_HEIGHT / 2 + .33, .01]} size={33} />
+                    <GenerateCharacter onLoad={() => setCharacterLoaded(true)} />
                 </group>
 
                 <mesh renderOrder={90} rotation={[0, Math.PI, 0]}>

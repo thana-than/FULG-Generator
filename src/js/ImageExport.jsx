@@ -3,33 +3,34 @@ import { useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { CARD_RES_X, CARD_RES_Y, CARD_SCALE_WIDTH, CARD_SCALE_HEIGHT } from './Card.jsx';
 
-export default function ImageExport() {
+export default function ImageExport({ isCardReady, gl, scene }) {
     const EXPORT_WIDTH = CARD_RES_X;
     const EXPORT_HEIGHT = CARD_RES_Y;
 
-    const { gl, scene } = useThree();
+    // const { gl, scene } = useThree();
 
     const cardName = () => { return `card-export-${Date.now()}`; }
 
-    // TODO only allow export once the card has fully animated in
-    // TODO return a button that the user can click to export the image
+    // //* Enter key is assigned to export image
+    // React.useEffect(() => {
+    //     const handleKeyDown = (e) => {
+    //         if (e.key === 'Enter') {
+    //             exportImage();
+    //         }
+    //     };
 
-    //* Enter key is assigned to export image
-    React.useEffect(() => {
-        const handleKeyDown = (e) => {
-            if (e.key === 'Enter') {
-                exportImage();
-            }
-        };
-
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    });
-
-
+    //     window.addEventListener('keydown', handleKeyDown);
+    //     return () => window.removeEventListener('keydown', handleKeyDown);
+    // });
 
     //* Export function
     const exportImage = () => {
+
+        if (!isCardReady) {
+            console.log('Card is not ready to export');
+            return;
+        }
+
         //* Create a render target with desired resolution
         const renderTarget = new THREE.WebGLRenderTarget(
             EXPORT_WIDTH,
@@ -104,4 +105,13 @@ export default function ImageExport() {
             document.body.removeChild(link);
         }, 100);
     };
+
+    return (
+        <button
+            className="download-button"
+            onClick={exportImage}>
+            Download Image
+        </button>
+    );
+
 }

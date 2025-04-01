@@ -1,0 +1,91 @@
+* {
+    font-family: "Belanosima", sans-serif;
+    font-style: normal;
+    font-size: 15pt;
+    letter-spacing: .5pt;
+
+    --bg-color: #05140200;
+    --line-color: #051402;
+    --glow-color: #dbebd8;
+    --glow-spread-color: #dbebd8;
+    --hover-color: #dbebd8;
+}
+
+button {
+    cursor: pointer;
+}
+
+.main {
+    padding: 0;
+    top: 0;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: rgb(233, 245, 204);
+    background: radial-gradient(circle, rgba(233, 245, 204, 1) 0%, rgba(151, 237, 159, 1) 54%, rgba(52, 135, 103, 1) 100%);
+}
+
+.copy {
+    font-size: 10pt;
+    padding: 0;
+    margin: 0;
+    color: var(--line-color);
+    text-decoration: none;
+}
+
+.download-button {
+    border: none;
+    color: var(--line-color);
+    background: none;
+    transition: all 0.3s ease;
+    z-index: 1;
+    font-size: 12pt;
+    letter-spacing: .5pt;
+}
+
+.download-button:hover {
+    /* transform: scale(1.05); */
+    letter-spacing: .1em;
+}
+
+.download-button:active {
+    color: var(--hover-color);
+    transform: scale(.95);
+}
+
+.button {
+    font-family: "Belanosima", sans-serif;
+    /* border: .25em solid var(--line-color); */
+    padding: 10pt 15pt;
+    color: var(--line-color);
+    font-size: 15pt;
+    letter-spacing: .5pt;
+    font-weight: bold;
+    background-color: var(--bg-color);
+    border-radius: .5em;
+    outline: none;
+    position: relative;
+    transition: all 0.3s;
+
+    border: none;
+    outline: .25em solid var(--line-color);
+    outline-offset: -.25em;
+}
+
+.button:hover {
+    color: var(--hover-color);
+    background-color: var(--line-color);
+    outline: transparent;
+    box-shadow: 0 0 0.5em .5em var(--glow-color),
+        0 0 5em 3em var(--glow-spread-color),
+        inset 0 0 0em 0em var(--glow-color);
+}
+
+.button:active {
+    transform: scale(.95);
+    background-color: var(--hover-color);
+    color: var(--line-color);
+}
