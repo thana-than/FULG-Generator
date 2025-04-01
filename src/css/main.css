@@ -61,6 +61,11 @@ button {
     }
 }
 
+.no-hover .button:hover,
+.no-hover .download-button:hover {
+    all: unset;
+}
+
 .download-button:active {
     color: var(--hover-color);
     transform: scale(.95);
