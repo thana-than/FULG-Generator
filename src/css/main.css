@@ -18,6 +18,98 @@ button {
     cursor: pointer;
 }
 
+.loader {
+    color: var(--line-color);
+    font-size: 10px;
+    width: 1em;
+    height: 1em;
+    margin: auto;
+    border-radius: 50%;
+    position: relative;
+    text-indent: -9999em;
+    animation: pop-in .5s, mulShdSpin .5s infinite linear;
+    transform: translateZ(0);
+}
+
+@keyframes pop-in {
+
+    0%,
+    90% {
+        color: var(--bg-color);
+    }
+
+    100% {
+        color: var(--line-color);
+    }
+}
+
+@keyframes mulShdSpin {
+
+    0%,
+    100% {
+        box-shadow: 0 -3em 0 0.2em,
+            2em -2em 0 0em, 3em 0 0 -1em,
+            2em 2em 0 -1em, 0 3em 0 -1em,
+            -2em 2em 0 -1em, -3em 0 0 -1em,
+            -2em -2em 0 0;
+    }
+
+    12.5% {
+        box-shadow: 0 -3em 0 0, 2em -2em 0 0.2em,
+            3em 0 0 0, 2em 2em 0 -1em, 0 3em 0 -1em,
+            -2em 2em 0 -1em, -3em 0 0 -1em,
+            -2em -2em 0 -1em;
+    }
+
+    25% {
+        box-shadow: 0 -3em 0 -0.5em,
+            2em -2em 0 0, 3em 0 0 0.2em,
+            2em 2em 0 0, 0 3em 0 -1em,
+            -2em 2em 0 -1em, -3em 0 0 -1em,
+            -2em -2em 0 -1em;
+    }
+
+    37.5% {
+        box-shadow: 0 -3em 0 -1em, 2em -2em 0 -1em,
+            3em 0em 0 0, 2em 2em 0 0.2em, 0 3em 0 0em,
+            -2em 2em 0 -1em, -3em 0em 0 -1em, -2em -2em 0 -1em;
+    }
+
+    50% {
+        box-shadow: 0 -3em 0 -1em, 2em -2em 0 -1em,
+            3em 0 0 -1em, 2em 2em 0 0em, 0 3em 0 0.2em,
+            -2em 2em 0 0, -3em 0em 0 -1em, -2em -2em 0 -1em;
+    }
+
+    62.5% {
+        box-shadow: 0 -3em 0 -1em, 2em -2em 0 -1em,
+            3em 0 0 -1em, 2em 2em 0 -1em, 0 3em 0 0,
+            -2em 2em 0 0.2em, -3em 0 0 0, -2em -2em 0 -1em;
+    }
+
+    75% {
+        box-shadow: 0em -3em 0 -1em, 2em -2em 0 -1em,
+            3em 0em 0 -1em, 2em 2em 0 -1em, 0 3em 0 -1em,
+            -2em 2em 0 0, -3em 0em 0 0.2em, -2em -2em 0 0;
+    }
+
+    87.5% {
+        box-shadow: 0em -3em 0 0, 2em -2em 0 -1em,
+            3em 0 0 -1em, 2em 2em 0 -1em, 0 3em 0 -1em,
+            -2em 2em 0 0, -3em 0em 0 0, -2em -2em 0 0.2em;
+    }
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 .main {
     padding: 0;
     top: 0;
@@ -48,7 +140,7 @@ button {
     background-color: var(--line-color);
     outline: transparent;
     box-shadow: 0 0 0.5em .5em var(--glow-color),
-        0 0 5em 3em var(--glow-spread-color),
+        0 0 3em 1em var(--glow-spread-color),
         inset 0 0 0em 0em var(--glow-color);
 }
 
@@ -97,7 +189,7 @@ button {
     background-color: var(--line-color);
     outline: transparent;
     box-shadow: 0 0 0.5em .5em var(--glow-color),
-        0 0 5em 3em var(--glow-spread-color),
+        0 0 3em 1em var(--glow-spread-color),
         inset 0 0 0em 0em var(--glow-color);
     transform: scale(.95);
     background-color: var(--hover-color);

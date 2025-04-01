@@ -67,6 +67,17 @@ const App = () => {
         setIsCardAnimationComplete(true);
     }
 
+    const Loading = () => {
+        return <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '100%',
+            width: '100%',
+            position: 'absolute',
+        }}><div className="loader"></div></div>;
+    };
+
     const ControlsUpdater = () => {
         useFrame((state) => {
             //* Controls that pause the orbit when we drag at all
@@ -109,6 +120,7 @@ const App = () => {
 
     return (
         <div className={'main'}>
+            {!isCardReady && <Loading />}
             <Canvas
                 ref={appCanvas}
                 camera={{ position: [0, 0, 10], fov: 25 }} // Adjust camera position
@@ -161,7 +173,7 @@ const App = () => {
                 width: '100%',
                 position: 'absolute',
             }}>
-                <Button label={"NEW CARD"} onClick={refreshCard} />
+                <Button label={"DRAW CARD"} onClick={refreshCard} />
                 <ImageExport isCardReady={isCardAnimationComplete} gl={canvasData.current?.gl} scene={canvasData.current?.scene} />
             </div>
 

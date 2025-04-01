@@ -85,7 +85,7 @@ export default function ImageExport({ isCardReady, gl, scene }) {
             newTab.document.body.style.display = "flex";
             newTab.document.body.style.justifyContent = "center";
             newTab.document.body.style.alignItems = "center";
-            newTab.document.body.style.height = "100vh";
+            newTab.document.body.style.height = "100%";
             newTab.document.body.style.backgroundColor = "#111";
 
             const img = newTab.document.createElement('img');

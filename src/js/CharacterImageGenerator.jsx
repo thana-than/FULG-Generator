@@ -1,4 +1,3 @@
-import Global from './Global.js'
 import React from 'react';
 import { parts } from './metadata.js'
 import * as THREE from 'three';
@@ -17,12 +16,8 @@ const TYPE_RENDER_ORDER = {
 
 var arm_index = -1
 var testjson = {}
-if (Global.TEST_MODE) {
-    try {
-        testjson = await import('/testparts.json');
-    } catch (e) {
-        console.log("testparts.json does not exist.")
-    }
+if (process.env.TESTMODE === 'true') {
+    testjson = require("/testparts.json");
 }
 
 function resetGenerator() {
@@ -40,7 +35,7 @@ function GetPart(type) {
 
     let index = -1
 
-    if (Global.TEST_MODE && type in testjson) {
+    if (process.env.TESTMODE === 'true' && type in testjson) {
         console.log("Searching test requirement for " + type + ": " + testjson[type])
         index = parts[type].findIndex((element) => element.key.includes(testjson[type]))
     }
