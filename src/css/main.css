@@ -46,9 +46,19 @@ button {
     letter-spacing: .5pt;
 }
 
-.download-button:hover {
-    /* transform: scale(1.05); */
-    letter-spacing: .1em;
+@media (hover: hover) {
+    .download-button:hover {
+        letter-spacing: .1em;
+    }
+
+    .button:hover {
+        color: var(--hover-color);
+        background-color: var(--line-color);
+        outline: transparent;
+        box-shadow: 0 0 0.5em .5em var(--glow-color),
+            0 0 5em 3em var(--glow-spread-color),
+            inset 0 0 0em 0em var(--glow-color);
+    }
 }
 
 .download-button:active {
@@ -73,15 +83,6 @@ button {
     border: none;
     outline: .25em solid var(--line-color);
     outline-offset: -.25em;
-}
-
-.button:hover {
-    color: var(--hover-color);
-    background-color: var(--line-color);
-    outline: transparent;
-    box-shadow: 0 0 0.5em .5em var(--glow-color),
-        0 0 5em 3em var(--glow-spread-color),
-        inset 0 0 0em 0em var(--glow-color);
 }
 
 .button:active {
