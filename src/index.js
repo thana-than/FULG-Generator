@@ -42,6 +42,13 @@ const App = () => {
         };
     }, []);
 
+    React.useEffect(() => {
+        if (orbitControls.current) {
+            const isMobile = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+            orbitControls.current.rotateSpeed = isMobile ? 1.66 : 1.0;
+        }
+    }, [orbitControls.current]);
+
     const refreshCard = () => {
         setIsCardReady(false);
         setIsCardAnimationComplete(false);
