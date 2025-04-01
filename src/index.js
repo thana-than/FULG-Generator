@@ -30,6 +30,18 @@ const App = () => {
     const [isCardReady, setIsCardReady] = React.useState(false);
     const [isCardAnimationComplete, setIsCardAnimationComplete] = React.useState(false);
 
+    React.useEffect(() => {
+        const handleTouchStart = () => {
+            document.body.classList.add("no-hover");
+        };
+
+        window.addEventListener("touchstart", handleTouchStart, { once: true });
+
+        return () => {
+            window.removeEventListener("touchstart", handleTouchStart);
+        };
+    }, []);
+
     const refreshCard = () => {
         setIsCardReady(false);
         setIsCardAnimationComplete(false);
