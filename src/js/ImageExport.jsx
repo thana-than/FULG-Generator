@@ -1,5 +1,5 @@
 import React from 'react';
-import { useThree } from '@react-three/fiber';
+import Button from './Button.jsx'
 import * as THREE from 'three';
 import { CARD_RES_X, CARD_RES_Y, CARD_SCALE_WIDTH, CARD_SCALE_HEIGHT } from './Card.jsx';
 
@@ -7,21 +7,7 @@ export default function ImageExport({ isCardReady, gl, scene }) {
     const EXPORT_WIDTH = CARD_RES_X;
     const EXPORT_HEIGHT = CARD_RES_Y;
 
-    // const { gl, scene } = useThree();
-
     const cardName = () => { return `card-export-${Date.now()}`; }
-
-    // //* Enter key is assigned to export image
-    // React.useEffect(() => {
-    //     const handleKeyDown = (e) => {
-    //         if (e.key === 'Enter') {
-    //             exportImage();
-    //         }
-    //     };
-
-    //     window.addEventListener('keydown', handleKeyDown);
-    //     return () => window.removeEventListener('keydown', handleKeyDown);
-    // });
 
     //* Export function
     const exportImage = () => {
@@ -92,26 +78,35 @@ export default function ImageExport({ isCardReady, gl, scene }) {
 
         //* Download
         const url = canvas.toDataURL('image/png');
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `${cardName()}.png`;
-        document.body.appendChild(link);
-        link.click();
+        const newTab = window.open();
+        if (newTab) {
+            newTab.document.title = "Your FULG"; //*TODO
+            newTab.document.body.style.margin = "0";
+            newTab.document.body.style.display = "flex";
+            newTab.document.body.style.justifyContent = "center";
+            newTab.document.body.style.alignItems = "center";
+            newTab.document.body.style.height = "100vh";
+            newTab.document.body.style.backgroundColor = "#111";
+
+            const img = newTab.document.createElement('img');
+            img.src = url;
+            img.style.maxWidth = "100%";
+            img.style.maxHeight = "100%";
+            img.style.objectFit = "contain";
+
+            newTab.document.body.appendChild(img);
+        }
 
         //* Clean up
         renderTarget.dispose();
         setTimeout(() => {  //* Cleanup DOM element
             URL.revokeObjectURL(url);
-            document.body.removeChild(link);
+            //document.body.removeChild(link);
         }, 100);
     };
 
     return (
-        <button
-            className="download-button"
-            onClick={exportImage}>
-            Download Image
-        </button>
+        <Button label={"Save Card"} onClick={exportImage} className={"download-button"} />
     );
 
 }

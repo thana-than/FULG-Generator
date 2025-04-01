@@ -9,11 +9,13 @@
     --glow-color: #dbebd8;
     --glow-spread-color: #dbebd8;
     --hover-color: #dbebd8;
+    user-select: none;
+
 }
 
 button {
+    -webkit-tap-highlight-color: transparent;
     cursor: pointer;
-    user-select: none;
 }
 
 .main {
@@ -37,35 +39,17 @@ button {
     text-decoration: none;
 }
 
-@media not all and (hover: none) and (pointer: fine) {
-    .download-button:hover {
-        letter-spacing: .1em;
-    }
-
-    .button:hover {
-        color: var(--hover-color);
-        background-color: var(--line-color);
-        outline: transparent;
-        box-shadow: 0 0 0.5em .5em var(--glow-color),
-            0 0 5em 3em var(--glow-spread-color),
-            inset 0 0 0em 0em var(--glow-color);
-    }
+.download-button:hover {
+    letter-spacing: .1em;
 }
 
-.no-hover .download-button:hover,
-.download-button {
-    border: none;
-    color: var(--line-color);
-    background: none;
-    transition: all 0.3s ease;
-    z-index: 1;
-    font-size: 12pt;
-    letter-spacing: .5pt;
-}
-
-.download-button:active {
+.button:hover {
     color: var(--hover-color);
-    transform: scale(.95);
+    background-color: var(--line-color);
+    outline: transparent;
+    box-shadow: 0 0 0.5em .5em var(--glow-color),
+        0 0 5em 3em var(--glow-spread-color),
+        inset 0 0 0em 0em var(--glow-color);
 }
 
 .no-hover .button:hover,
@@ -86,9 +70,35 @@ button {
     border: none;
     outline: .25em solid var(--line-color);
     outline-offset: -.25em;
+    transition-duration: 250ms;
 }
 
+.no-hover .download-button:hover,
+.download-button {
+    border: none;
+    color: var(--line-color);
+    background: none;
+    transition: all 0.3s ease;
+    z-index: 1;
+    font-size: 12pt;
+    letter-spacing: .5pt;
+}
+
+.no-hover .download-button:active,
+.download-button:active {
+    letter-spacing: .1em;
+    color: var(--hover-color);
+    transform: scale(.95);
+}
+
+.no-hover .button:active,
 .button:active {
+    color: var(--hover-color);
+    background-color: var(--line-color);
+    outline: transparent;
+    box-shadow: 0 0 0.5em .5em var(--glow-color),
+        0 0 5em 3em var(--glow-spread-color),
+        inset 0 0 0em 0em var(--glow-color);
     transform: scale(.95);
     background-color: var(--hover-color);
     color: var(--line-color);
