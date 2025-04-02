@@ -22,6 +22,8 @@ export const CARD_SIZE_MULT = .003;
 export const CARD_SCALE_WIDTH = CARD_RES_X * CARD_SIZE_MULT;
 export const CARD_SCALE_HEIGHT = CARD_RES_Y * CARD_SIZE_MULT;
 
+const INCLUDE_SLOGAN = false;
+
 export default function Card({ onReady, onAnimationComplete }) {
     // Load textures
     const [cardFrameTexture, cardOutlineTexture, cardBackLogoTexture, cardBackOutlineTexture, cardBackBGTexture, cardMaskTexture, cardGradientTexture] = useTexture([
@@ -35,9 +37,7 @@ export default function Card({ onReady, onAnimationComplete }) {
     ]);
 
     const fontLoader = new FontLoader();
-    //const font_griffy = fontLoader.parse(require('../fonts/Griffy_Regular.json'));
-    // const font_berlinSans = fontLoader.parse(require('../fonts/Berlin Sans.json'));
-    const font_title_json = fontLoader.parse(require('../fonts/Belanosima Bold.json'));
+    const font_title_json = fontLoader.parse(require('../fonts/Schoolbell.json'));
     const font_slogan = 'Schoolbell';
 
     const cardGroup = React.useRef();
@@ -53,8 +53,8 @@ export default function Card({ onReady, onAnimationComplete }) {
     const [characterSlogan, setCharacterSlogan] = React.useState(GenerateSlogan())
 
     const NAME_X_MARGIN = .085;
-    const NAME_Y_MARGIN = .2;
-    const NAME_Z_POPOUT = .01;
+    const NAME_Y_MARGIN = .25;
+    const NAME_Z_POPOUT = 0;
 
     const SLOGAN_X_MARGIN = .085;
     const SLOGAN_Y = .55;
@@ -128,7 +128,7 @@ export default function Card({ onReady, onAnimationComplete }) {
         const textOptions = {
             font: font,
             size: size * CARD_SIZE_MULT,
-            depth: 0,
+            depth: .01,
             curveSegments: 12,
         }
 
@@ -260,8 +260,9 @@ export default function Card({ onReady, onAnimationComplete }) {
                         <planeGeometry args={[CARD_SCALE_WIDTH, CARD_SCALE_HEIGHT]} />
                         <meshStandardMaterial map={cardOutlineTexture} color={color} transparent={true} opacity={.66} side={THREE.FrontSide} />
                     </mesh>
-                    <TitleText text={characterName.toUpperCase()} font={font_title_json} position={[-CARD_SCALE_WIDTH / 2 + NAME_X_MARGIN, CARD_SCALE_HEIGHT / 2 - NAME_Y_MARGIN, NAME_Z_POPOUT]} maxWidth={CARD_SCALE_WIDTH - NAME_X_MARGIN * 2} size={33} />
-                    <SloganText text={characterSlogan} font={font_slogan} fontSize={24} position={[0, -CARD_SCALE_HEIGHT + SLOGAN_Y, SLOGAN_Z_POPOUT]} size={[CARD_SCALE_WIDTH - SLOGAN_X_MARGIN * 2, SLOGAN_Y - SLOGAN_BOTTOM_MARGIN]} align={'center'} />
+                    <TitleText text={characterName.toUpperCase()} font={font_title_json} position={[-CARD_SCALE_WIDTH / 2 + NAME_X_MARGIN, CARD_SCALE_HEIGHT / 2 - NAME_Y_MARGIN, NAME_Z_POPOUT]} maxWidth={CARD_SCALE_WIDTH - NAME_X_MARGIN * 2} size={42} />
+                    <TitleText text={"FUCKED UP LITTLE GUY"} font={font_title_json} position={[CARD_SCALE_WIDTH / 2 - .98, -CARD_SCALE_HEIGHT / 2 + .11, NAME_Z_POPOUT]} maxWidth={CARD_SCALE_WIDTH - NAME_X_MARGIN * 2} size={24} />
+                    {INCLUDE_SLOGAN && <SloganText text={characterSlogan} font={font_slogan} fontSize={24} position={[0, -CARD_SCALE_HEIGHT + SLOGAN_Y, SLOGAN_Z_POPOUT]} size={[CARD_SCALE_WIDTH - SLOGAN_X_MARGIN * 2, SLOGAN_Y - SLOGAN_BOTTOM_MARGIN]} align={'center'} />}
                     <GenerateCharacter onLoad={() => setCharacterLoaded(true)} />
                 </group>
 

@@ -2,8 +2,8 @@ import React from 'react';
 import { parts } from './metadata.js'
 import * as THREE from 'three';
 
-const CHAR_SIZE_MULT = .003;
-const CHAR_POSITION_OFFSET = [0, -.1, -.1]
+const CHAR_SIZE_MULT = .0025;
+const CHAR_POSITION_OFFSET = [0, -.15, -.1]
 const CHAR_BASE_RENDER_OFFSET = -100
 
 const TYPE_RENDER_ORDER = {
