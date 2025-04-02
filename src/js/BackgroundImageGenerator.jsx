@@ -5,9 +5,25 @@ import * as THREE from 'three';
 const RENDER_ORDER = -1000;
 const BG_RADIUS = 2
 
+var testjson = {}
+if (process.env.TESTMODE === 'true') {
+    testjson = require("/testparts.json");
+}
+
 function GetBackground() {
     const type = 'background'
-    return parts[type][Math.floor(Math.random() * parts[type].length)];
+
+    let index = -1;
+
+    if (process.env.TESTMODE === 'true' && type in testjson) {
+        console.log("Searching test requirement for background: " + testjson[type]);
+        index = parts[type].findIndex((element) => element.key.includes(testjson[type]));
+    }
+
+    if (index < 0)
+        index = Math.floor(Math.random() * parts[type].length);
+
+    return parts[type][index];
 };
 
 const BGSphere = ({ texture }) => {
