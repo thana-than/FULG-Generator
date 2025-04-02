@@ -8,7 +8,7 @@
     "test": "cross-env TESTMODE=true npm start",
     "dev": "npm run python_prebuild --dev && webpack --mode=development --watch",
     "build": "npm run python_prebuild && webpack --mode=production",
-    "python_prebuild": "pip install -r python/requirements.txt && python python/buildWordGenerator.py && python python/buildPartImports.py",
+    "python_prebuild": "pip install -r python/requirements.txt && python python/buildBackgroundMetas.py && python python/buildWordGenerator.py && python python/buildPartImports.py",
     "watch:webpack": "webpack --mode=development --watch",
     "watch:browser": "browser-sync start --server \"dist\" --files \"dist/**/*\""
   },
