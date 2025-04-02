@@ -1,9 +1,9 @@
-import * as PNG from '../.generated/partPNG.js';
+import * as IMG from '../.generated/partIMG.js';
 import * as THREE from 'three';
 
 export default class Part {
-    #png = null;
-    #pngUrl = null; //* Track the URL separately for cleanup
+    #img = null;
+    #imgUrl = null; //* Track the URL separately for cleanup
     #texture = null;
 
     constructor(key, json) {
@@ -20,12 +20,12 @@ export default class Part {
         if (this.#texture) return this.#texture;
 
         try {
-            const importFn = PNG[this.type][this.key];
+            const importFn = IMG[this.type][this.key];
             const module = await importFn();
-            this.#pngUrl = module.default;
-            this.#png = await this.#loadImage(this.#pngUrl);
+            this.#imgUrl = module.default;
+            this.#img = await this.#loadImage(this.#imgUrl);
 
-            this.#texture = new THREE.Texture(this.#png);
+            this.#texture = new THREE.Texture(this.#img);
             this.#texture.needsUpdate = true
 
             return this.#texture;
@@ -47,10 +47,10 @@ export default class Part {
     }
 
     dispose() {
-        if (this.#png) {
-            this.#png.src = '';
-            if (this.#png.parentNode) {
-                this.#png.parentNode.removeChild(this.#png);
+        if (this.#img) {
+            this.#img.src = '';
+            if (this.#img.parentNode) {
+                this.#img.parentNode.removeChild(this.#img);
             }
         }
 
@@ -58,8 +58,8 @@ export default class Part {
             this.#texture.dispose();
         }
 
-        this.#png = null;
-        this.#pngUrl = null;
+        this.#img = null;
+        this.#imgUrl = null;
         this.#texture = null;
     }
 }

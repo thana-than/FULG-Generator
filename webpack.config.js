@@ -49,7 +49,7 @@ module.exports = {
                 include: /\.module\.css$/
             },
             {
-                test: /\.(png|jpe?g|gif|svg)$/,
+                test: /\.(png|jpe?g|gif|svg|webp)$/,
                 use: [
                     {
                         loader: 'file-loader',

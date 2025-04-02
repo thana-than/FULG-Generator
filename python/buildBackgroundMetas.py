@@ -1,8 +1,9 @@
 import os
 import warnings
+import re
 
 FOLDER_PATH = "./src/parts/background"
-REQUIRED_EXT = '.png'
+PART_EXTENSIONS = re.compile(r'\.(png|jpe?g|webp)$')
 DEFAULT_JSON = '{ "type": "background" }'
 
 def fillMeta(dir, defaultContentsJSON):
@@ -15,7 +16,8 @@ def fillMeta(dir, defaultContentsJSON):
 
     contents = os.listdir(dir)
     for entry in contents:
-        if not entry.lower().endswith(REQUIRED_EXT): #TODO other filetypes? jpeg?
+        filename, file_extension = os.path.splitext(entry)
+        if not re.match(PART_EXTENSIONS, file_extension):
             continue
 
         file_path = os.path.join(dir, entry)

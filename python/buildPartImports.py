@@ -1,10 +1,14 @@
 import os
 import json
 import warnings
+import re
+
+part_extensions = r'\.(png|jpe?g|webp)'
 
 #* Generate imports for json files into arrays based on each part
 def getAllParts(directory):
     contents = os.listdir(directory)
+    str_contents = str(contents)
     parts = []
     failures = 0
 
@@ -12,22 +16,25 @@ def getAllParts(directory):
 
     for entry in contents:
         source_path = os.path.join(directory, entry)
+        filename, file_extension = os.path.splitext(entry)
 
         if os.path.isdir(source_path):
             #* March through dictionary
             _childParts, _childFailures = getAllParts(source_path)
             parts.extend(_childParts)
             failures += _childFailures
-        elif entry.lower().endswith('.png'):
-            #* Quick check to see if there are any stranded PNG files
-            if not os.path.exists(source_path.rsplit(os.extsep,1)[0] + '.json'):
-                warnings.warn(f'PNG file {source_path} does not have a matching JSON.')
+        elif re.match(part_extensions, file_extension.lower()):
+            #* Quick check to see if there are any stranded image files
+            if not os.path.exists(os.path.join(directory, filename) + '.json'):
+                warnings.warn(f'Image file {source_path} does not have a matching JSON.')
                 failures += 1
         elif entry.lower().endswith('.json'):
-            #* Test if png exists before adding
-            _png = source_path.rsplit(os.extsep,1)[0] + '.png'
-            if not os.path.exists(_png):
-                warnings.warn(f'JSON file {source_path} does not have a matching PNG.')
+            #* Test if image exists before adding
+            match = re.search(filename+part_extensions, str_contents)
+            if match:
+                _img = os.path.join(directory, match[0])  #* Use the first found match
+            else:
+                warnings.warn(f'JSON file {source_path} does not have a matching image file.')
                 failures += 1
                 continue
 
@@ -51,7 +58,7 @@ def getAllParts(directory):
             parts.append({
                 "type" : _type,
                 "hash" : _hash,
-                "png" : _png,
+                "img" : _img,
                 "json" : source_path, 
             })
 
@@ -114,8 +121,8 @@ print(f'Collected {len(parts)} parts.')
 
 generate_dynamic_imports_js(parts, os.path.join(outDir,'partJSON.js'), 'json', importPathPrefix, False)
 print('Generated partJSON.js')
-generate_dynamic_imports_js(parts, os.path.join(outDir,'partPNG.js'), 'png', importPathPrefix, True)
-print('Generated partPNG.js')
+generate_dynamic_imports_js(parts, os.path.join(outDir,'partIMG.js'), 'img', importPathPrefix, True)
+print('Generated partIMG.js')
 print('Part Generation Complete!')
 
 if failures > 0:
