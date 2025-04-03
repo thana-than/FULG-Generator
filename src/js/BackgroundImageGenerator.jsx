@@ -44,7 +44,7 @@ const BGSphere = ({ texture }) => {
     if (!modifiedTexture) return null;
 
     return (
-        <mesh renderOrder={RENDER_ORDER - 1} position={[0, 0, .15]} scale={[1, 1, .2]}>
+        <mesh renderOrder={RENDER_ORDER - 1} position={[0, 0, .15]} scale={[1, 1, .17]}>
             <sphereGeometry args={[BG_RADIUS]} />
             <meshBasicMaterial
                 map={modifiedTexture}
