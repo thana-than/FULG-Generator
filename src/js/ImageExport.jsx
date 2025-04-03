@@ -7,8 +7,6 @@ export default function ImageExport({ isCardReady, gl, scene }) {
     const EXPORT_WIDTH = CARD_RES_X;
     const EXPORT_HEIGHT = CARD_RES_Y;
 
-    const cardName = () => { return `card-export-${Date.now()}`; }
-
     //* Export function
     const exportImage = () => {
 
@@ -29,6 +27,8 @@ export default function ImageExport({ isCardReady, gl, scene }) {
                 antialias: true,
                 anisotropy: 16,
                 samples: 16,
+                encoding: THREE.sRGBEncoding, // For older Three.js versions
+                colorSpace: THREE.SRGBColorSpace, // For r152+
             }
         );
 
