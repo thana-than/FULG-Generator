@@ -27,8 +27,7 @@ export default function ImageExport({ isCardReady, gl, scene }) {
                 antialias: true,
                 anisotropy: 16,
                 samples: 16,
-                encoding: THREE.sRGBEncoding, // For older Three.js versions
-                colorSpace: THREE.SRGBColorSpace, // For r152+
+                colorSpace: THREE.SRGBColorSpace
             }
         );
 
