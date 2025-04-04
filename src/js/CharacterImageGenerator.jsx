@@ -131,7 +131,9 @@ async function loadPartData(part, offset) {
     position[2] += offset[2];
 
     let renderOrder = CHAR_BASE_RENDER_OFFSET
-    if (part['type'] in TYPE_RENDER_ORDER) {
+    if (part.sort !== undefined)
+        renderOrder = part.sort;
+    else if (part['type'] in TYPE_RENDER_ORDER) {
         renderOrder += TYPE_RENDER_ORDER[part['type']]
     }
 

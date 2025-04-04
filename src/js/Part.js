@@ -11,6 +11,8 @@ export default class Part {
         this.type = json['type'];
         this.vibes = json['vibes'];
         this.joints = json['joints'];
+        if ('sort' in json)
+            this.sort = json['sort'];
     }
 
     /**
