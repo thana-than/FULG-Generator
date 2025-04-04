@@ -9,6 +9,11 @@ export function GenerateName() {
     return value;
 }
 
+export function GenerateTrait() {
+    var value = grammar.flatten("#traitRoot#");
+    return value;
+}
+
 export function GenerateSlogan() {
     var value = grammar.flatten("#sloganRoot#");
     return value;
