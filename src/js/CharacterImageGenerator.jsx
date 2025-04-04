@@ -8,7 +8,7 @@ const CHAR_BASE_RENDER_OFFSET = -100
 
 const TYPE_RENDER_ORDER = {
     'head': 15,
-    'l_arm': 10,
+    'l_arm': 11,
     'r_arm': 10,
     'legs': 5,
     'torso': 0,
@@ -114,7 +114,7 @@ function GetPosition(pixel, texture) {
     return [x * CHAR_SIZE_MULT, y * CHAR_SIZE_MULT, 0];
 }
 
-async function loadPartData(part, offset) {
+async function loadPartData(part, offset, sortFudge = 0) {
     if (offset == undefined)
         offset = [0, 0, 0];
 
@@ -130,12 +130,15 @@ async function loadPartData(part, offset) {
     position[1] += offset[1];
     position[2] += offset[2];
 
+    const type = part['type'].split('.')[0]
+
     let renderOrder = CHAR_BASE_RENDER_OFFSET
     if (part.sort !== undefined)
-        renderOrder = part.sort;
-    else if (part['type'] in TYPE_RENDER_ORDER) {
-        renderOrder += TYPE_RENDER_ORDER[part['type']]
+        renderOrder += part.sort;
+    else if (type in TYPE_RENDER_ORDER) {
+        renderOrder += TYPE_RENDER_ORDER[type]
     }
+    renderOrder += sortFudge
 
     const partData = {
         'part': part,
@@ -152,7 +155,10 @@ async function createConnectionParts(partData) {
     const newParts = [];
 
     for (var joint in parentPart.joints) {
-        const p = GetPart(joint);
+        const jointID = joint.split('.')
+        const jType = jointID[0] //*Ensures we get the right type even if it's indexed
+        const sortFudge = jointID.length > 1 ? parseInt(jointID[1]) || 0 : 0;
+        const p = GetPart(jType);
 
         if (p == undefined)
             continue;
@@ -164,7 +170,7 @@ async function createConnectionParts(partData) {
             partData['position'][1] - jointOffset[1],
             partData['position'][2] - jointOffset[2],
         ];
-        const newData = await loadPartData(p, offset);
+        const newData = await loadPartData(p, offset, sortFudge);
         newParts.push(newData);
     }
 
