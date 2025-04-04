@@ -9,6 +9,8 @@
     "dev": "npm run python_prebuild --dev && webpack --mode=development --watch",
     "build": "npm run python_prebuild && webpack --mode=production",
     "python_prebuild": "pip install -r python/requirements.txt && python python/buildBackgroundMetas.py && python python/buildWordGenerator.py && python python/buildPartImports.py",
+    "twitch:dev": "cross-env TWITCH=true npm start",
+    "twitch": "cross-env TWITCH=true npm run build",
     "watch:webpack": "webpack --mode=development --watch",
     "watch:browser": "browser-sync start --server \"dist\" --files \"dist/**/*\""
   },
@@ -49,7 +51,9 @@
   "dependencies": {
     "@react-three/drei": "^10.0.5",
     "@react-three/fiber": "^9.1.0",
+    "axios": "^1.8.4",
     "browser-sync": "^3.0.3",
+    "comfy.js": "^1.1.27",
     "gsap": "^3.12.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

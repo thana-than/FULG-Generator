@@ -110,6 +110,7 @@ button {
     }
 }
 
+.renderer,
 .main {
     padding: 0;
     top: 0;
@@ -119,6 +120,13 @@ button {
     height: 100%;
     margin: 0;
     overflow: hidden;
+}
+
+.twitch {
+    background: transparent
+}
+
+.standardBackground {
     background: rgb(233, 245, 204);
     background: radial-gradient(circle, rgba(233, 245, 204, 1) 0%, rgba(151, 237, 159, 1) 54%, rgba(52, 135, 103, 1) 100%);
 }
