@@ -16,18 +16,19 @@ const TYPE_RENDER_ORDER = {
 
 var cached_partIndexes = {};
 var testjson = {}
+var partOccurrences = {}
 if (process.env.TESTMODE === 'true') {
     testjson = require("/testparts.json");
 }
 
 function resetGenerator() {
+    partOccurrences = {};
     cached_partIndexes = {};
 }
 
 function getTypeCacheKey(type) {
     const arr = type.split('.')[0].split('_');
     type = arr[arr.length - 1] //* Get the last of the '_' split
-    console.log(type);
     return type;
 }
 
@@ -114,7 +115,7 @@ function GetPosition(pixel, texture) {
     return [x * CHAR_SIZE_MULT, y * CHAR_SIZE_MULT, 0];
 }
 
-async function loadPartData(part, offset, sortFudge = 0) {
+async function loadPartData(part, offset) {
     if (offset == undefined)
         offset = [0, 0, 0];
 
@@ -132,13 +133,18 @@ async function loadPartData(part, offset, sortFudge = 0) {
 
     const type = part['type'].split('.')[0]
 
+    let partOccuranceCount = partOccurrences[type] || 0;
+
     let renderOrder = CHAR_BASE_RENDER_OFFSET
     if (part.sort !== undefined)
         renderOrder += part.sort;
     else if (type in TYPE_RENDER_ORDER) {
         renderOrder += TYPE_RENDER_ORDER[type]
     }
-    renderOrder += sortFudge
+    renderOrder += partOccuranceCount
+
+    partOccuranceCount++;
+    partOccurrences[type] = partOccuranceCount
 
     const partData = {
         'part': part,
@@ -157,7 +163,6 @@ async function createConnectionParts(partData) {
     for (var joint in parentPart.joints) {
         const jointID = joint.split('.')
         const jType = jointID[0] //*Ensures we get the right type even if it's indexed
-        const sortFudge = jointID.length > 1 ? parseInt(jointID[1]) || 0 : 0;
         const p = GetPart(jType);
 
         if (p == undefined)
@@ -170,7 +175,7 @@ async function createConnectionParts(partData) {
             partData['position'][1] - jointOffset[1],
             partData['position'][2] - jointOffset[2],
         ];
-        const newData = await loadPartData(p, offset, sortFudge);
+        const newData = await loadPartData(p, offset);
         newParts.push(newData);
     }
 

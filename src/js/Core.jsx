@@ -25,8 +25,10 @@ export default function Core() {
         setScene(canvas.scene)
     }
 
-    function Page() {
-        return (
+    return (
+        <div className={'main standardBackground'} >
+            <Render onCardReadyStateChanged={setIsCardReady} onCanvasDataChanged={SetCanvas} />
+
             <>
                 <div style={{
                     display: 'flex',
@@ -54,13 +56,6 @@ export default function Core() {
                     <CopyLine />
                 </div>
             </>
-        )
-    }
-
-    return (
-        <div className={'main standardBackground'} >
-            <Render onCardReadyStateChanged={setIsCardReady} onCanvasDataChanged={SetCanvas} />
-            <Page />
         </div>
     );
 };
