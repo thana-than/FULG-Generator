@@ -24,13 +24,9 @@ function resetGenerator() {
     cached_partIndexes = {};
 }
 
-String.prototype.rsplit = function (sep, maxsplit) {
-    var split = this.split(sep);
-    return maxsplit ? [split.slice(0, -maxsplit).join(sep)].concat(split.slice(-maxsplit)) : split;
-}
-
 function getTypeCacheKey(type) {
-    type = type.split('.')[0].rsplit('_');
+    const arr = type.split('.')[0].split('_');
+    type = arr[arr.length - 1] //* Get the last of the '_' split
     console.log(type);
     return type;
 }
