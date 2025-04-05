@@ -4,8 +4,8 @@ import * as THREE from 'three';
 import { CARD_RES_X, CARD_RES_Y, CARD_SCALE_WIDTH, CARD_SCALE_HEIGHT } from './Card.jsx';
 
 export default function ImageExport({ isCardReady, gl, scene }) {
-    const EXPORT_WIDTH = CARD_RES_X;
-    const EXPORT_HEIGHT = CARD_RES_Y;
+    const EXPORT_WIDTH = CARD_RES_X * 2;
+    const EXPORT_HEIGHT = CARD_RES_Y * 2;
 
     //* Export function
     const exportImage = () => {

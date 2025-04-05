@@ -12,7 +12,7 @@ import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import { extend } from '@react-three/fiber'
 extend({ TextGeometry })
-import { GenerateName, GenerateSlogan, GenerateTrait } from './GenerateText.js';
+import { GenerateName, GenerateTrait } from './GenerateText.js';
 
 
 export const CARD_RES_X = 630;
@@ -21,8 +21,6 @@ export const CARD_RES_Y = 880;
 export const CARD_SIZE_MULT = .003;
 export const CARD_SCALE_WIDTH = CARD_RES_X * CARD_SIZE_MULT;
 export const CARD_SCALE_HEIGHT = CARD_RES_Y * CARD_SIZE_MULT;
-
-const INCLUDE_SLOGAN = false;
 
 export default function Card({ onReady, onAnimationComplete }) {
     // Load textures
@@ -38,7 +36,7 @@ export default function Card({ onReady, onAnimationComplete }) {
 
     const fontLoader = new FontLoader();
     const font_title_json = fontLoader.parse(require('../fonts/Schoolbell.json'));
-    const font_slogan = 'Schoolbell';
+    const fontBold_title_json = fontLoader.parse(require('../fonts/Schoolbell_Bold.json'));
     const CARD_SUBTITLE = "Fucked Up Little Guy";
 
     const cardGroup = React.useRef();
@@ -51,7 +49,6 @@ export default function Card({ onReady, onAnimationComplete }) {
     const [isReady, setIsReady] = React.useState(false);
     const [isAnimationComplete, setIsAnimationComplete] = React.useState(false);
     const [characterName, setCharacterName] = React.useState(GenerateName())
-    const [characterSlogan, setCharacterSlogan] = React.useState(GenerateSlogan())
     const [characterTraitGroup, setCharacterTraitGroup] = React.useState(GenerateTraitGroup())
 
     function GenerateTraitGroup() {
@@ -69,10 +66,6 @@ export default function Card({ onReady, onAnimationComplete }) {
     const NAME_Z_POPOUT = 0;
 
     const TRAIT_Y_MARGIN = .36;
-    const SLOGAN_X_MARGIN = .085;
-    const SLOGAN_Y = .55;
-    const SLOGAN_BOTTOM_MARGIN = 0.025;
-    const SLOGAN_Z_POPOUT = .01;
 
     function getRandomColor() {
         const rgb = hsvToRgb(Math.random(), 1, .4);
@@ -117,32 +110,12 @@ export default function Card({ onReady, onAnimationComplete }) {
 
     }, [isReady]);
 
-    function FrameBox({ position, size }) {
-        return (
-            <mesh renderOrder={99} depthWrite={false} position={position} >
-                <boxGeometry args={size} />
-                <meshBasicMaterial
-                    color={color}
-                    transparent={true}
-                    colorWrite={true}
-                    depthWrite={false}
-                    depthTest={false}
-                    stencilWrite={true}
-                    stencilRef={1}
-                    stencilFunc={THREE.EqualStencilFunc}
-                    stencilZPass={THREE.ReplaceStencilOp}
-                    side={THREE.BackSide}
-                />
-            </mesh>
-        );
-    }
-
-    function TitleText({ text, font, position, size, maxWidth, align = 'left' }) {
+    function TitleText({ text, position, size, maxWidth, align = 'left' }) {
         const textOptions = {
-            font: font,
+            font: font_title_json,
             size: size * CARD_SIZE_MULT,
             depth: .01,
-            curveSegments: 12,
+            curveSegments: 1,
         }
 
         const tempGeometry = new TextGeometry(text, textOptions);
@@ -160,95 +133,38 @@ export default function Card({ onReady, onAnimationComplete }) {
             xOffset = -finalWidth;
         }
 
+        const positionWithOffset = [position[0] + xOffset, position[1], position[2]];
+
+        const outlineOptions = {
+            ...textOptions,
+            font: fontBold_title_json,
+            depth: 0,
+        }
+
+        function TextMesh({ renderOrder, color, options }) {
+            return (
+                <mesh renderOrder={renderOrder} position={positionWithOffset}>
+                    <textGeometry args={[text, options]} />
+                    <meshBasicMaterial color={color}
+                        transparent={true}
+                        colorWrite={true}
+                        depthWrite={false}
+                        depthTest={false}
+                        stencilWrite={true}
+                        stencilRef={1}
+                        stencilFunc={THREE.EqualStencilFunc}
+                        stencilZPass={THREE.ReplaceStencilOp}
+                        side={THREE.BackSide} />
+                </mesh>
+            );
+        }
+
         return (
-            <mesh renderOrder={1000} position={[position[0] + xOffset, position[1], position[2]]}>
-                <textGeometry args={[text, textOptions]} />
-                <meshBasicMaterial color={textColor}
-                    transparent={true}
-                    colorWrite={true}
-                    depthWrite={false}
-                    depthTest={false}
-                    stencilWrite={true}
-                    stencilRef={1}
-                    stencilFunc={THREE.EqualStencilFunc}
-                    stencilZPass={THREE.ReplaceStencilOp}
-                    side={THREE.BackSide} />
-            </mesh>
+            <>
+                <TextMesh renderOrder={999} color={'black'} options={outlineOptions} />
+                <TextMesh renderOrder={1000} color={textColor} options={textOptions} />
+            </>
         )
-    }
-
-    function SloganText({ text, font, fontSize, position = [0, 0, 0], size = [CARD_SCALE_WIDTH, CARD_SCALE_HEIGHT], align = 'left', lineHeight = 1.6, maxLines = 4 }) {
-        const texture = React.useMemo(() => {
-            const canvas = document.createElement('canvas');
-            canvas.width = size[0] / CARD_SIZE_MULT;
-            canvas.height = size[1] / CARD_SIZE_MULT;
-
-            const context = canvas.getContext('2d');
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.textAlign = 'center';
-            context.textBaseline = "middle";
-            context.font = `${fontSize}pt ${font}`;
-
-
-            wrapText(context, text, canvas.width, 50, lineHeight);
-
-            const texture = new THREE.CanvasTexture(canvas);
-            texture.anisotropy = 16; //* For better texture quality
-            return texture;
-
-            function wrapText(ctx, text, maxWidth, margin, lineHeight) {
-                const lines = [];
-                let line = '';
-
-                // Split paragraphs first
-                const paragraphs = text.split('\n');
-
-                paragraphs.forEach(paragraph => {
-                    const words = paragraph.split(' ');
-                    line = words[0];
-
-                    for (let i = 1; i < words.length; i++) {
-                        const testLine = line + ' ' + words[i];
-                        const metrics = ctx.measureText(testLine);
-                        if (metrics.width <= maxWidth - margin) {
-                            line = testLine;
-                        } else {
-                            lines.push(line);
-                            line = words[i];
-                        }
-                    }
-                    lines.push(line);
-                });
-
-                const len = Math.min(lines.length, maxLines);
-                for (let i = 0; i < len; i++) {
-                    let x = margin;
-                    if (align === 'center') x = maxWidth / 2;
-                    if (align === 'right') x = maxWidth;
-
-                    const y = canvas.height - (len - i) * lineHeight * fontSize;//yOffset + i * lineHeight * fontSize;
-
-                    ctx.lineWidth = 2;
-                    ctx.strokeStyle = '#000000';
-                    ctx.strokeText(lines[i], x, y);
-
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fillText(lines[i], x, y);
-                }
-            }
-        }, [text]);
-
-        return (
-            <mesh position={[position[0], position[1] - size[1] / 2 + CARD_SCALE_HEIGHT / 2, position[2]]}>
-                <planeGeometry args={size} />
-                <meshBasicMaterial
-                    map={texture}
-                    side={THREE.FrontSide}
-                    transparent
-                    alphaTest={0.1}
-                />
-            </mesh>
-        );
     }
 
     return (
@@ -282,12 +198,10 @@ export default function Card({ onReady, onAnimationComplete }) {
                         <planeGeometry args={[CARD_SCALE_WIDTH, CARD_SCALE_HEIGHT]} />
                         <meshStandardMaterial map={cardOutlineTexture} color={color} transparent={true} opacity={.66} side={THREE.FrontSide} />
                     </mesh>
-                    <TitleText text={characterName.toUpperCase()} font={font_title_json} position={[-CARD_SCALE_WIDTH / 2 + NAME_X_MARGIN, CARD_SCALE_HEIGHT / 2 - NAME_Y_MARGIN, NAME_Z_POPOUT]} maxWidth={CARD_SCALE_WIDTH - NAME_X_MARGIN * 2} size={42} />
-                    {/* <TitleText text={"FUCKED UP LITTLE GUY"} font={font_title_json} position={[CARD_SCALE_WIDTH / 2 - .98, -CARD_SCALE_HEIGHT / 2 + .11, NAME_Z_POPOUT]} maxWidth={CARD_SCALE_WIDTH - NAME_X_MARGIN * 2} size={24} /> */}
+                    <TitleText text={characterName.toUpperCase()} position={[-CARD_SCALE_WIDTH / 2 + NAME_X_MARGIN, CARD_SCALE_HEIGHT / 2 - NAME_Y_MARGIN, NAME_Z_POPOUT]} maxWidth={CARD_SCALE_WIDTH - NAME_X_MARGIN * 2} size={42} />
                     <TitleText text={CARD_SUBTITLE} font={font_title_json} position={[-CARD_SCALE_WIDTH / 2 + NAME_X_MARGIN + .01, CARD_SCALE_HEIGHT / 2 - TRAIT_Y_MARGIN, NAME_Z_POPOUT]} maxWidth={CARD_SCALE_WIDTH - NAME_X_MARGIN * 2} size={24} />
-                    <TitleText text={characterTraitGroup[0]} font={font_title_json} position={[CARD_SCALE_WIDTH / 2 - NAME_X_MARGIN, -CARD_SCALE_HEIGHT / 2 + .245, NAME_Z_POPOUT]} maxWidth={CARD_SCALE_WIDTH - NAME_X_MARGIN * 2} size={24} align={'right'} />
-                    <TitleText text={characterTraitGroup[1]} font={font_title_json} position={[CARD_SCALE_WIDTH / 2 - NAME_X_MARGIN * 1.5, -CARD_SCALE_HEIGHT / 2 + .11, NAME_Z_POPOUT]} maxWidth={CARD_SCALE_WIDTH - NAME_X_MARGIN * 3} size={32} align={'right'} />
-                    {INCLUDE_SLOGAN && <SloganText text={characterSlogan} font={font_slogan} fontSize={24} position={[0, -CARD_SCALE_HEIGHT + SLOGAN_Y, SLOGAN_Z_POPOUT]} size={[CARD_SCALE_WIDTH - SLOGAN_X_MARGIN * 2, SLOGAN_Y - SLOGAN_BOTTOM_MARGIN]} align={'center'} />}
+                    <TitleText text={characterTraitGroup[0]} position={[CARD_SCALE_WIDTH / 2 - NAME_X_MARGIN, -CARD_SCALE_HEIGHT / 2 + .245, NAME_Z_POPOUT]} maxWidth={CARD_SCALE_WIDTH - NAME_X_MARGIN * 2} size={24} align={'right'} />
+                    <TitleText text={characterTraitGroup[1]} position={[CARD_SCALE_WIDTH / 2 - NAME_X_MARGIN * 1.5, -CARD_SCALE_HEIGHT / 2 + .11, NAME_Z_POPOUT]} maxWidth={CARD_SCALE_WIDTH - NAME_X_MARGIN * 3} size={32} align={'right'} />
                     <GenerateCharacter onLoad={() => setCharacterLoaded(true)} />
                 </group>
 
