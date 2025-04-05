@@ -2,6 +2,7 @@ import os
 import json
 import warnings
 import re
+import hashlib
 
 part_extensions = r'\.(png|jpe?g|webp)'
 
@@ -67,7 +68,11 @@ def getAllParts(directory):
 def generate_file_hash_name(full_path, file_name):
     _file, _ext = os.path.splitext(file_name)
     _file = os.path.basename(_file)
-    return f"{_file}_{hash(full_path)}"
+    hashStr = os.path.basename(os.path.dirname(full_path)) + _file
+
+    hash_object = hashlib.md5(hashStr.encode())
+    file_hash = hash_object.hexdigest()
+    return f"{_file}_{file_hash}"
 
 def generate_dynamic_imports_js(parts, filename, pathKey, importPathPrefix, makeDynamicModule):
     #* Build types
