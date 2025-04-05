@@ -31,6 +31,7 @@ String.prototype.rsplit = function (sep, maxsplit) {
 
 function getTypeCacheKey(type) {
     type = type.split('.')[0].rsplit('_');
+    console.log(type);
     return type;
 }
 
@@ -44,8 +45,9 @@ function GetPart(type) {
     if (process.env.TESTMODE === 'true' && type in testjson) {
         console.log("Searching test requirement for " + type + ": " + testjson[type])
         index = parts[type].findIndex((element) => element.key.includes(testjson[type]))
-    } else if (cached_partIndexes[cacheKey])
+    } else if (cached_partIndexes[cacheKey] !== undefined) {
         index = cached_partIndexes[cacheKey];
+    }
 
     if (index < 0)
         index = Math.floor(Math.random() * parts[type].length);
