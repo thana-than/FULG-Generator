@@ -14,19 +14,24 @@ const TYPE_RENDER_ORDER = {
     'torso': 0,
 }
 
-var arm_index = -1
+var cached_partIndexes = {};
 var testjson = {}
 if (process.env.TESTMODE === 'true') {
     testjson = require("/testparts.json");
 }
 
 function resetGenerator() {
-    arm_index = -1
+    cached_partIndexes = {};
 }
 
+String.prototype.rsplit = function (sep, maxsplit) {
+    var split = this.split(sep);
+    return maxsplit ? [split.slice(0, -maxsplit).join(sep)].concat(split.slice(-maxsplit)) : split;
+}
 
-function isArmType(type) {
-    return type == 'l_arm' || type == 'r_arm';
+function getTypeCacheKey(type) {
+    type = type.split('.')[0].rsplit('_');
+    return type;
 }
 
 function GetPart(type) {
@@ -35,20 +40,17 @@ function GetPart(type) {
 
     let index = -1
 
+    const cacheKey = getTypeCacheKey(type);
     if (process.env.TESTMODE === 'true' && type in testjson) {
         console.log("Searching test requirement for " + type + ": " + testjson[type])
         index = parts[type].findIndex((element) => element.key.includes(testjson[type]))
-    }
-    else if (isArmType(type) && arm_index >= 0) {
-        index = arm_index;
-        //console.log("Selected cached arm index for " + type + ": " + index)
-    }
+    } else if (cached_partIndexes[cacheKey])
+        index = cached_partIndexes[cacheKey];
 
     if (index < 0)
         index = Math.floor(Math.random() * parts[type].length);
 
-    if (isArmType(type))
-        arm_index = index;
+    cached_partIndexes[cacheKey] = index;
 
     return parts[type][index];
 };
