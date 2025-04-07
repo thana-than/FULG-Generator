@@ -26,7 +26,7 @@
       "**/*"
     ],
     "win": {
-      "icon": "fulg_icon.png",
+      "icon": "/assets/fulg_icon.png",
       "target": "portable"
     }
   },
