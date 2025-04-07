@@ -9,9 +9,10 @@
     "dev": "npm run python_prebuild --dev && webpack --mode=development --watch",
     "build": "npm run python_prebuild && webpack --mode=production",
     "python_prebuild": "pip install -r python/requirements.txt && python python/buildBackgroundMetas.py && python python/buildWordGenerator.py && python python/buildPartImports.py",
-    "twitch:dev": "cross-env TWITCH=true npm start",
-    "twitch": "cross-env TWITCH=true npm run build",
+    "twitch:dev": "npm run python_prebuild && npm-run-all --parallel watch:twitch watch:browser",
+    "twitch": "npm run python_prebuild && webpack --mode=production --env site=twitch.js",
     "watch:webpack": "webpack --mode=development --watch",
+    "watch:twitch": "webpack --mode=development --watch --env site=twitch.js",
     "watch:browser": "browser-sync start --server \"dist\" --files \"dist/**/*\""
   },
   "repository": {
@@ -40,6 +41,7 @@
     "file-loader": "^6.2.0",
     "gh-pages": "^6.3.0",
     "html-webpack-plugin": "^5.6.3",
+    "nodemon": "^3.1.9",
     "npm-run-all": "^4.1.5",
     "raw-loader": "^4.0.2",
     "semantic-release": "^24.2.3",
@@ -54,6 +56,7 @@
     "axios": "^1.8.4",
     "browser-sync": "^3.0.3",
     "comfy.js": "^1.1.27",
+    "express": "^5.1.0",
     "gsap": "^3.12.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
