@@ -58,14 +58,16 @@ export default function Render({ onCardReadyStateChanged, onCanvasDataChanged, o
         }
     }, [orbitControls.current]);
 
-    const refreshCard = () => {
+    const refreshCard = (customID) => {
         setIsCardReady(false);
         setIsCardAnimationComplete(false);
         if (onCardReadyStateChanged)
             onCardReadyStateChanged(false)
-        setCardKey(prevKey => prevKey + 1);
-        if (onNewCard)
-            onNewCard();
+
+        if (customID)
+            setCardKey(customID);
+        else
+            setCardKey(prevKey => prevKey + 1);
     };
 
     const cardReady = () => {
@@ -119,6 +121,11 @@ export default function Render({ onCardReadyStateChanged, onCanvasDataChanged, o
         })
     };
 
+    function handleNewCard(cardParams) {
+        if (onNewCard)
+            onNewCard(cardParams);
+    }
+
     return (
         <div className={'renderer'}>
             {!isCardReady && <Loading />}
@@ -129,7 +136,7 @@ export default function Render({ onCardReadyStateChanged, onCanvasDataChanged, o
             >
                 <Environment preset="lobby" environmentIntensity={1} blur={.5} />
                 <ambientLight intensity={1} />
-                <Card key={cardKey} ref={card} onReady={cardReady} onAnimationComplete={cardAnimationComplete} />
+                <Card key={cardKey} cardID={cardKey} ref={card} onReady={cardReady} onCardCreated={handleNewCard} onAnimationComplete={cardAnimationComplete} />
                 <CanvasData />
                 <OrbitControls
                     onStart={() => {

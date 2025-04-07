@@ -22,7 +22,7 @@ export const CARD_SIZE_MULT = .003;
 export const CARD_SCALE_WIDTH = CARD_RES_X * CARD_SIZE_MULT;
 export const CARD_SCALE_HEIGHT = CARD_RES_Y * CARD_SIZE_MULT;
 
-export default function Card({ onReady, onAnimationComplete }) {
+export default function Card({ cardID, onReady, onAnimationComplete, onCardCreated }) {
     // Load textures
     const [cardFrameTexture, cardOutlineTexture, cardBackLogoTexture, cardBackOutlineTexture, cardBackBGTexture, cardMaskTexture, cardGradientTexture] = useTexture([
         'assets/card_frame.png',
@@ -58,7 +58,7 @@ export default function Card({ onReady, onAnimationComplete }) {
             group.push(group[0]);
             group[0] = '';
         }
-        group[0] = group[0].toUpperCase().trim()
+        group[0] = group[0].trim()
         group[1] = group[1].trim()
         return group;
     }
@@ -169,6 +169,18 @@ export default function Card({ onReady, onAnimationComplete }) {
         )
     }
 
+    React.useEffect(() => {
+        if (onCardCreated) {
+            const cardParams = {
+                cardID: cardID,
+                characterName: characterName,
+                traitTitle: characterTraitGroup[0],
+                traitContent: characterTraitGroup[1]
+            }
+            onCardCreated(cardParams);
+        }
+    }, []);
+
     return (
         <>
             <group ref={cardGroup} scale={[0, 0, 0]}>
@@ -202,7 +214,7 @@ export default function Card({ onReady, onAnimationComplete }) {
                     </mesh>
                     <TitleText text={characterName.toUpperCase()} position={[-CARD_SCALE_WIDTH / 2 + NAME_X_MARGIN, CARD_SCALE_HEIGHT / 2 - NAME_Y_MARGIN, NAME_Z_POPOUT]} maxWidth={CARD_SCALE_WIDTH - NAME_X_MARGIN * 2} size={42} />
                     <TitleText text={CARD_SUBTITLE} font={font_title_json} position={[-CARD_SCALE_WIDTH / 2 + NAME_X_MARGIN + .01, CARD_SCALE_HEIGHT / 2 - TRAIT_Y_MARGIN, NAME_Z_POPOUT]} maxWidth={CARD_SCALE_WIDTH - NAME_X_MARGIN * 2} size={24} />
-                    <TitleText text={characterTraitGroup[0]} position={[CARD_SCALE_WIDTH / 2 - NAME_X_MARGIN, -CARD_SCALE_HEIGHT / 2 + .245, NAME_Z_POPOUT]} maxWidth={CARD_SCALE_WIDTH - NAME_X_MARGIN * 2} size={24} align={'right'} />
+                    <TitleText text={characterTraitGroup[0].toUpperCase()} position={[CARD_SCALE_WIDTH / 2 - NAME_X_MARGIN, -CARD_SCALE_HEIGHT / 2 + .245, NAME_Z_POPOUT]} maxWidth={CARD_SCALE_WIDTH - NAME_X_MARGIN * 2} size={24} align={'right'} />
                     <TitleText text={characterTraitGroup[1]} position={[CARD_SCALE_WIDTH / 2 - NAME_X_MARGIN, -CARD_SCALE_HEIGHT / 2 + .11, NAME_Z_POPOUT]} maxWidth={CARD_SCALE_WIDTH - NAME_X_MARGIN * 2} size={32} align={'right'} />
                     <GenerateCharacter onLoad={() => setCharacterLoaded(true)} />
                 </group>

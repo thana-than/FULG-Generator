@@ -122,6 +122,46 @@ button {
     overflow: hidden;
 }
 
+.electron {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    app-region: drag;
+    overflow: hidden;
+}
+
+.electronTopBar {
+    position: absolute;
+    width: 100%;
+    height: 30px;
+    margin: 0px;
+    vertical-align: middle;
+    background-color: black;
+    top: 0;
+    left: 0;
+    display: inline-flex;
+    flex-direction: row;
+    app-region: drag;
+    z-index: 100;
+    overflow: hidden;
+}
+
+.electronTopBar * {
+    margin: auto;
+    vertical-align: middle;
+}
+
+.electronTopBar button {
+    height: 80%;
+    app-region: no-drag;
+}
+
+.electronTopBar input {
+    app-region: no-drag;
+}
+
 .twitch {
     background: transparent
 }

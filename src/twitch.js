@@ -9,8 +9,80 @@ function App() {
     const [username, setUsername] = React.useState(null);
     const [token, setToken] = React.useState(GetToken());
     const [isConnected, setIsConnected] = React.useState(false);
+    const [rewardName, setRewardName] = React.useState("FULG REWARD");
+    const cardQueue = React.useRef(0);
+    const cardIndex = React.useRef(0);
     const ACCESS_KEY = 'access_token';
+    const REWARD_NAME_KEY = 'reward_name';
     const CLIENT_ID = "kv64ab553hk8l0iekzhg6cmg7140x4";
+    const VISIBLE_SECONDS = 10;
+
+    const isProcessingRef = React.useRef(false);
+    const queuedIDs = React.useRef(new Map());
+
+    const enqueueCard = (user) => {
+        cardQueue.current++;
+
+        const processQueue = async () => {
+            //* If a card is already being processed, don't start another one
+            if (isProcessingRef.current) {
+                return;
+            }
+
+            isProcessingRef.current = true;
+
+            while (cardQueue.current > cardIndex.current) {
+
+                cardIndex.current++;
+                if (user) {
+                    console.log(cardIndex.current + " | " + user);
+                    queuedIDs.current.set(cardIndex.current, user);
+                }
+
+                window.refreshCard(cardIndex.current); //* Update the card
+
+                console.log("NEW CARD " + cardIndex.current + " of " + cardQueue.current);
+
+                await new Promise(resolve => setTimeout(resolve, VISIBLE_SECONDS * 1000));
+            }
+
+            isProcessingRef.current = false;
+        };
+
+        processQueue();
+    }
+
+    const newCardEvent = (params) => {
+        const requestedUser = queuedIDs.current.get(params.cardID)
+        console.log("CARD ID " + params.cardID);
+        if (!requestedUser)
+            return;
+
+        const str = `‼️ ${requestedUser} pulled a new Fucked Up Little Guy! ‼️   🃏 ${params.characterName.toUpperCase()} 🃏   ⚪️ ${params.traitTitle}: ${params.traitContent} ⚪️`
+        ComfyJS.Say(str);
+
+        queuedIDs.current.delete(params.cardID);
+    }
+
+
+    React.useEffect(() => {
+        if (!isConnected)
+            return;
+
+        ComfyJS.onReward = (user, reward, cost, message, extra) => {
+            if (reward.includes(rewardName)) {
+                enqueueCard(user);
+            }
+        };
+    }, [rewardName, isConnected]);
+
+
+    React.useEffect(() => {
+        const savedRewardName = localStorage.getItem(REWARD_NAME_KEY);
+        console.log("SAVED REWARD NAME: " + savedRewardName);
+        if (savedRewardName)
+            setRewardName(savedRewardName);
+    }, []);
 
     function GetToken() {
         //* Check for token in url
@@ -58,11 +130,9 @@ function App() {
     }, [token]);
 
     React.useEffect(() => {
-        if (username && token) {
+        if (username && token && !isConnected) {
             ComfyJS.Init(username, token);
             setIsConnected(true);
-
-            SetupEventHandling();
         }
 
         return () => {
@@ -88,23 +158,32 @@ function App() {
         setToken(null);
     };
 
-    const SetupEventHandling = () => {
-        // Set up event handlers
-        ComfyJS.onChat = (user, message, flags, self, extra) => {
-            console.log(`${user}: ${message}`);
-
-            if (message.includes("NEW"))
-                window.refreshCard();
-        };
-    }
-
-
-
     if (!token || !username) {
         return <TwitchAuth client_id={CLIENT_ID} />;
     }
 
-    return <Twitch />;
+    const handleRewardNameChange = (e) => {
+        setRewardName(e.target.value); // Update state with the new input value
+    };
+
+    const handleFieldKeyDown = (e) => {
+        if (e.key === "Enter") {
+            e.target.blur(); // Remove focus from the input field
+            localStorage.setItem(REWARD_NAME_KEY, rewardName);
+        }
+    };
+
+    return <>
+        <Twitch visibleSeconds={VISIBLE_SECONDS} onNewCard={newCardEvent} />
+        <div className={'electron'}></div>
+        <div className={'electronTopBar'}>
+            <>FUCKED UP LITTLE GUY</>
+            <button onClick={enqueueCard}>DRAW</button>
+            <label>
+                Reward Name: <input name="rewardName" value={rewardName} onChange={handleRewardNameChange} onKeyDown={handleFieldKeyDown} />
+            </label>
+        </div>
+    </>;
 }
 
 

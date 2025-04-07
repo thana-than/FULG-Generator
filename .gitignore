@@ -6,6 +6,7 @@ testparts.json
 
 # Node modules directory
 node_modules/
+release/
 
 #Affinity Lock files
 *~lock~

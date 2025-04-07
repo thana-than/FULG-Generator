@@ -6,10 +6,14 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 module.exports = env => {
     if (env.site == undefined)
         env.site = 'index.js';
+
+    if (env.dist == undefined)
+        env.dist = 'dist'
+
     return {
         entry: './src/' + env.site,
         output: {
-            path: path.resolve(__dirname, 'dist'),
+            path: path.resolve(__dirname, env.dist),
             filename: '[name].js',
             chunkFilename: '[name].js',
             clean: true,

@@ -28,7 +28,6 @@ const TwitchAuth = ({ client_id }) => {
 
     return (
         <div style={{ padding: "1rem" }}>
-            <h1>Twitch OAuth Demo (React)</h1>
             {token ? (
                 <div>
                     <p><strong>Access Token:</strong></p>

@@ -1,6 +1,10 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 
+app.commandLine.appendSwitch('disable-backgrounding-occluded-windows', 'true');
+app.commandLine.appendSwitch('enable-webgl');
+app.commandLine.appendSwitch('ignore-gpu-blacklist');
+
 function createWindow() {
     const home = `file://${path.join(__dirname, 'index.html')}`;
 
@@ -11,9 +15,11 @@ function createWindow() {
         frame: false,
         resizable: true,
         hasShadow: false,
+        minimizable: false,
         webPreferences: {
             contextIsolation: false,
             nodeIntegration: false,
+            backgroundThrottling: false,
             // devTools: false
         }
     });
@@ -31,6 +37,13 @@ function createWindow() {
                 win.loadURL(url.toString());
             }
         }
+    });
+
+    win.on('minimize', (event) => {
+        event.preventDefault();
+        setTimeout(() => {
+            win.restore();  //* Bring it back
+        }, 10);
     });
 }
 
