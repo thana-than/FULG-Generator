@@ -12,7 +12,8 @@ module.exports = env => {
             path: path.resolve(__dirname, 'dist'),
             filename: '[name].js',
             chunkFilename: '[name].js',
-            clean: true
+            clean: true,
+            publicPath: './'
         },
         resolve: {
             alias: {
@@ -73,9 +74,6 @@ module.exports = env => {
                 }
             ]
         },
-        resolve: {
-            extensions: ['.js', '.jsx']
-        },
         devServer: {
             static: {
                 directory: './dist'
@@ -91,7 +89,8 @@ module.exports = env => {
             }),
             new CopyWebpackPlugin({
                 patterns: [
-                    { from: 'src/assets', to: 'assets' }
+                    { from: 'src/assets', to: 'assets' },
+                    { from: 'src/electronApp.js', to: 'electronApp.js' }
                 ]
             })
         ],

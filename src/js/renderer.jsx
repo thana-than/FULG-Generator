@@ -11,7 +11,7 @@ import '../css/main.css'
 //* Actually solves for our imports
 import './metadata.js'
 
-export default function Render({ onCardReadyStateChanged, onCanvasDataChanged, rotateSpeed = 2 }) {
+export default function Render({ onCardReadyStateChanged, onCanvasDataChanged, onNewCard, rotateSpeed = 2, distance = 10 }) {
     const appCanvas = React.useRef();
     const orbitControls = React.useRef();
     const card = React.useRef();
@@ -39,7 +39,7 @@ export default function Render({ onCardReadyStateChanged, onCanvasDataChanged, r
 
     React.useEffect(() => {
         window.refreshCard = refreshCard;
-    });
+    }, []);
 
     function CanvasData() {
         const { gl, scene } = useThree();
@@ -64,6 +64,8 @@ export default function Render({ onCardReadyStateChanged, onCanvasDataChanged, r
         if (onCardReadyStateChanged)
             onCardReadyStateChanged(false)
         setCardKey(prevKey => prevKey + 1);
+        if (onNewCard)
+            onNewCard();
     };
 
     const cardReady = () => {
@@ -122,7 +124,7 @@ export default function Render({ onCardReadyStateChanged, onCanvasDataChanged, r
             {!isCardReady && <Loading />}
             <Canvas
                 ref={appCanvas}
-                camera={{ position: [0, 0, 10], fov: 25 }} // Adjust camera position
+                camera={{ position: [0, 0, distance], fov: 25 }} // Adjust camera position
                 gl={{ preserveDrawingBuffer: true, stencil: true, depth: true, powerPreference: 'high-performance', anisotrtophy: 2, samples: 4, antialias: true }}
             >
                 <Environment preset="lobby" environmentIntensity={1} blur={.5} />
