@@ -1,6 +1,5 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import Core from './js/Core.jsx'
 
 import './css/main.css'
 //* Actually solves for our imports
