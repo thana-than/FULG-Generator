@@ -9,8 +9,8 @@
     "dev": "npm run python_prebuild --dev && webpack --mode=development --watch",
     "build": "npm run python_prebuild && webpack --mode=production",
     "python_prebuild": "pip install -r python/requirements.txt && python python/buildBackgroundMetas.py && python python/buildWordGenerator.py && python python/buildPartImports.py",
-    "twitch:dev": "npm run python_prebuild && webpack --mode=development --env site=twitch.js && electron ./dist/electronApp.js",
-    "twitch": "npm run python_prebuild && webpack --mode=production --env site=twitch.js dist=electron/dist && electron-builder",
+    "twitch:dev": "cross-env TWITCH_BUILD_TYPE=dev npm run python_prebuild && webpack --mode=development --env site=twitch.js && electron ./dist/electronApp.js",
+    "twitch": "cross-env TWITCH_BUILD_TYPE=prod npm run python_prebuild && webpack --mode=production --env site=twitch.js dist=electron/dist && electron-builder",
     "watch:webpack": "webpack --mode=development --watch",
     "watch:twitch": "webpack --mode=development --watch --env site=twitch.js",
     "watch:browser": "browser-sync start --server \"dist\" --files \"dist/**/*\""

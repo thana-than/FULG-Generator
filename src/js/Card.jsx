@@ -50,6 +50,7 @@ export default function Card({ cardID, onReady, onAnimationComplete, onCardCreat
     const [isAnimationComplete, setIsAnimationComplete] = React.useState(false);
     const [characterName, setCharacterName] = React.useState(GenerateName())
     const [characterTraitGroup, setCharacterTraitGroup] = React.useState(GenerateTraitGroup())
+    const [isNewCard, setIsNewCard] = React.useState(true);
 
     function GenerateTraitGroup() {
         const trait = GenerateTrait();
@@ -170,16 +171,16 @@ export default function Card({ cardID, onReady, onAnimationComplete, onCardCreat
     }
 
     React.useEffect(() => {
-        if (onCardCreated) {
-            const cardParams = {
-                cardID: cardID,
-                characterName: characterName,
+        if (onCardCreated && isNewCard) {
+            setIsNewCard(false);
+            onCardCreated({
+                cardID,
+                characterName,
                 traitTitle: characterTraitGroup[0],
                 traitContent: characterTraitGroup[1]
-            }
-            onCardCreated(cardParams);
+            });
         }
-    }, []);
+    }, [onCardCreated, isNewCard]);
 
     return (
         <>

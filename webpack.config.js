@@ -86,7 +86,8 @@ module.exports = env => {
         plugins: [
             new webpack.DefinePlugin({
                 'process.env.TESTMODE': JSON.stringify(process.env.TESTMODE),
-                'process.env.TWITCH': JSON.stringify(process.env.TWITCH)
+                'process.env.TWITCH': JSON.stringify(process.env.TWITCH),
+                'process.env.TWITCH_BUILD_TYPE': JSON.stringify(process.env.TWITCH_BUILD_TYPE)
             }),
             new HtmlWebpackPlugin({
                 template: './src/index.html',

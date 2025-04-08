@@ -39,7 +39,11 @@ export default function Render({ onCardReadyStateChanged, onCanvasDataChanged, o
 
     React.useEffect(() => {
         window.refreshCard = refreshCard;
-    }, []);
+
+        return () => {
+            delete window.refreshCard;
+        };
+    }, [onCardReadyStateChanged]);
 
     function CanvasData() {
         const { gl, scene } = useThree();
@@ -63,6 +67,8 @@ export default function Render({ onCardReadyStateChanged, onCanvasDataChanged, o
         setIsCardAnimationComplete(false);
         if (onCardReadyStateChanged)
             onCardReadyStateChanged(false)
+
+        console.log("REFRESH CARD");
 
         if (customID)
             setCardKey(customID);

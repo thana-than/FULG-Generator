@@ -39,6 +39,9 @@ export default function Twitch({ visibleSeconds, onNewCard }) {
         });
     }
 
+
+    console.log("Render mounted")
+
     return (
         <div className={'main twitch'} ref={renderRef} >
             <Render onNewCard={onCardReady} rotateSpeed={0} distance={7.5} />

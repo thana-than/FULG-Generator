@@ -16,12 +16,18 @@ function App() {
     const REWARD_NAME_KEY = 'reward_name';
     const CLIENT_ID = "kv64ab553hk8l0iekzhg6cmg7140x4";
     const VISIBLE_SECONDS = 10;
+    const MESSAGE_DELAY = 5;
 
     const isProcessingRef = React.useRef(false);
     const queuedIDs = React.useRef(new Map());
 
     const enqueueCard = (user) => {
         cardQueue.current++;
+        if (user) {
+            const userIndex = cardQueue.current;
+            console.log(userIndex + " | " + user);
+            queuedIDs.current.set(userIndex, user);
+        }
 
         const processQueue = async () => {
             //* If a card is already being processed, don't start another one
@@ -34,10 +40,6 @@ function App() {
             while (cardQueue.current > cardIndex.current) {
 
                 cardIndex.current++;
-                if (user) {
-                    console.log(cardIndex.current + " | " + user);
-                    queuedIDs.current.set(cardIndex.current, user);
-                }
 
                 window.refreshCard(cardIndex.current); //* Update the card
 
@@ -52,16 +54,17 @@ function App() {
         processQueue();
     }
 
-    const newCardEvent = (params) => {
+    const newCardEvent = async (params) => {
         const requestedUser = queuedIDs.current.get(params.cardID)
         console.log("CARD ID " + params.cardID);
         if (!requestedUser)
             return;
 
+        queuedIDs.current.delete(params.cardID);
+
+        await new Promise(resolve => setTimeout(resolve, MESSAGE_DELAY * 1000));
         const str = `‼️ ${requestedUser} pulled a new Fucked Up Little Guy! ‼️   🃏 ${params.characterName.toUpperCase()} 🃏   ⚪️ ${params.traitTitle}: ${params.traitContent} ⚪️`
         ComfyJS.Say(str);
-
-        queuedIDs.current.delete(params.cardID);
     }
 
 
