@@ -14,8 +14,8 @@ module.exports = env => {
         entry: './src/' + env.site,
         output: {
             path: path.resolve(__dirname, env.dist),
-            filename: '[name].js',
-            chunkFilename: '[name].js',
+            filename: '[name].[contenthash].js',
+            chunkFilename: '[name].[contenthash].js',
             clean: true,
             publicPath: './'
         },
@@ -62,7 +62,7 @@ module.exports = env => {
                         {
                             loader: 'file-loader',
                             options: {
-                                name: '[path][name].[ext]',
+                                name: '[path][name].[contenthash].[ext]',
                                 context: 'src'
                             }
                         }
