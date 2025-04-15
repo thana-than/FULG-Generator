@@ -3,23 +3,34 @@ import React from 'react';
 import { Start } from './appCore.js'
 import TwitchAuth from './js/TwitchAuth.jsx'
 import Twitch from './js/Twitch.jsx'
+import SendDiscord from './js/DiscordIntegration.js'
 import ComfyJS from "comfy.js";
+import { RenderImageToCanvas } from './js/ImageExport.jsx'
 
 function App() {
     const [username, setUsername] = React.useState(null);
     const [token, setToken] = React.useState(GetToken());
     const [isConnected, setIsConnected] = React.useState(false);
     const [rewardName, setRewardName] = React.useState("FULG REWARD");
+    const [discordWebhook, setDiscordWebhook] = React.useState("");
+    const [gl, setGL] = React.useState(null);
+    const [scene, setScene] = React.useState(null);
     const cardQueue = React.useRef(0);
     const cardIndex = React.useRef(0);
     const ACCESS_KEY = 'access_token';
     const REWARD_NAME_KEY = 'reward_name';
+    const DISCORD_HOOK_KEY = 'discord_webhook';
     const CLIENT_ID = "kv64ab553hk8l0iekzhg6cmg7140x4";
     const VISIBLE_SECONDS = 10;
     const MESSAGE_DELAY = 5;
 
     const isProcessingRef = React.useRef(false);
     const queuedIDs = React.useRef(new Map());
+
+    function SetCanvas(canvas) {
+        setGL(canvas.gl)
+        setScene(canvas.scene)
+    }
 
     const enqueueCard = (user) => {
         cardQueue.current++;
@@ -55,22 +66,39 @@ function App() {
     }
 
     const newCardEvent = async (params) => {
-        const requestedUser = queuedIDs.current.get(params.cardID)
+        let requestedUser = queuedIDs.current.get(params.cardID)
         console.log("CARD ID " + params.cardID);
-        if (!requestedUser)
-            return;
+        if (!requestedUser || typeof requestedUser !== 'string') {
+            requestedUser = username;
+        }
 
         queuedIDs.current.delete(params.cardID);
 
         await new Promise(resolve => setTimeout(resolve, MESSAGE_DELAY * 1000));
-        const str = `‼️ ${requestedUser} pulled a new Fucked Up Little Guy! ‼️   🃏 ${params.characterName.toUpperCase()} 🃏   ⚪️ ${params.traitTitle}: ${params.traitContent} ⚪️`
+        params.traitStr = !params.traitTitle ? params.traitContent : `${params.traitTitle}: ${params.traitContent}`
+        const str = `‼️ ${requestedUser} pulled a new Fucked Up Little Guy! ‼️   🃏 ${params.characterName.toUpperCase()} 🃏   ⚪️ ${params.traitStr} ⚪️`
         ComfyJS.Say(str);
+
+        if (discordWebhook) {
+            const cardImage = RenderImageToCanvas(gl, scene);
+            cardImage.toBlob(blob => {
+                SendDiscord(discordWebhook, requestedUser, params, blob);
+            });
+        }
     }
 
 
     React.useEffect(() => {
         if (!isConnected)
             return;
+
+        // //? TESTING ONLY, COMMENT OUT WHEN DONE
+        // ComfyJS.onChat = (user, message) => {
+        //     if (message.includes(rewardName)) {
+        //         enqueueCard(user);
+        //     }
+        // };
+        // //?
 
         ComfyJS.onReward = (user, reward, cost, message, extra) => {
             if (reward.includes(rewardName)) {
@@ -82,9 +110,13 @@ function App() {
 
     React.useEffect(() => {
         const savedRewardName = localStorage.getItem(REWARD_NAME_KEY);
+        const savedDiscordHook = localStorage.getItem(DISCORD_HOOK_KEY);
         console.log("SAVED REWARD NAME: " + savedRewardName);
+        console.log("SAVED DISCORD HOOK: " + savedDiscordHook);
         if (savedRewardName)
             setRewardName(savedRewardName);
+        if (savedDiscordHook)
+            setDiscordWebhook(savedDiscordHook);
     }, []);
 
     function GetToken() {
@@ -169,21 +201,36 @@ function App() {
         setRewardName(e.target.value); // Update state with the new input value
     };
 
-    const handleFieldKeyDown = (e) => {
+    const handleDiscordHookChange = (e) => {
+        //TODO allow just hook without https link
+        setDiscordWebhook(e.target.value); // Update state with the new input value
+    };
+
+    const handleRewardKeyDown = (e) => {
         if (e.key === "Enter") {
             e.target.blur(); // Remove focus from the input field
             localStorage.setItem(REWARD_NAME_KEY, rewardName);
         }
     };
 
+    const handleDiscordKeyDown = (e) => {
+        if (e.key === "Enter") {
+            e.target.blur(); // Remove focus from the input field
+            localStorage.setItem(DISCORD_HOOK_KEY, discordWebhook);
+        }
+    };
+
     return <>
-        <Twitch visibleSeconds={VISIBLE_SECONDS} onNewCard={newCardEvent} />
+        <Twitch visibleSeconds={VISIBLE_SECONDS} onNewCard={newCardEvent} onCanvasDataChange={SetCanvas} />
         <div className={'electron'}></div>
         <div className={'electronTopBar'}>
-            <>FUCKED UP LITTLE GUY</>
+            {/* <>FUCKED UP LITTLE GUY</> */}
             <button onClick={enqueueCard}>DRAW</button>
             <label>
-                Reward Name: <input name="rewardName" value={rewardName} onChange={handleRewardNameChange} onKeyDown={handleFieldKeyDown} />
+                Discord: <input name="discordWebhook" value={discordWebhook} onChange={handleDiscordHookChange} onKeyDown={handleDiscordKeyDown} />
+            </label>
+            <label>
+                Reward: <input name="rewardName" value={rewardName} onChange={handleRewardNameChange} onKeyDown={handleRewardKeyDown} />
             </label>
         </div>
     </>;

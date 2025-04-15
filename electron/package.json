@@ -2,5 +2,5 @@
     "name": "fulg-generator",
     "description": "Fucked Up Little Guy Generator",
     "main": "./dist/electronApp.js",
-    "version": "1.0.3"
+    "version": "1.0.4"
 }

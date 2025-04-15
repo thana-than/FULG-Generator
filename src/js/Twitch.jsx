@@ -2,7 +2,7 @@ import React from 'react';
 import Render from './renderer.jsx';
 import { gsap } from 'gsap';
 
-export default function Twitch({ visibleSeconds, onNewCard }) {
+export default function Twitch({ visibleSeconds, onNewCard, onCanvasDataChange }) {
     const renderRef = React.useRef();
 
     React.useEffect(() => {
@@ -44,7 +44,7 @@ export default function Twitch({ visibleSeconds, onNewCard }) {
 
     return (
         <div className={'main twitch'} ref={renderRef} >
-            <Render onNewCard={onCardReady} rotateSpeed={0} distance={7.5} />
+            <Render onNewCard={onCardReady} rotateSpeed={0} distance={7.5} onCanvasDataChanged={onCanvasDataChange} />
         </div>
     );
 };
